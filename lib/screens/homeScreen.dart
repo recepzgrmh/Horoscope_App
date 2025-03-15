@@ -5,97 +5,76 @@ import 'package:horoscope/widgets/tarotCard.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  Widget _buildFlexibleSpace(BuildContext context, BoxConstraints constraints) {
+    final double maxHeight = MediaQuery.of(context).size.height;
+    final double percent =
+        (constraints.maxHeight - kToolbarHeight) / (maxHeight - kToolbarHeight);
+    final double opacity = percent.clamp(0.0, 1.0);
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Opacity(
+          opacity: opacity,
+          child: Image.asset(
+            'assets/images/home-screen.png',
+            fit: BoxFit.cover,
+          ),
+        ),
+        Container(color: AppColors.backgroundColor.withOpacity(0.7 * opacity)),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Opacity(
+              opacity: opacity,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Daily Tarot',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.displayLarge,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Readings',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.displayMedium,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "Unveil the mysteries the universe holds for you today.",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       body: NotificationListener<ScrollNotification>(
-        onNotification: (scrollNotification) {
-          return false;
-        },
+        onNotification: (_) => false,
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
-              expandedHeight:
-                  MediaQuery.of(context).size.height, // Tam ekran açılış
+              expandedHeight: MediaQuery.of(context).size.height * 0.7,
               floating: false,
               pinned: true,
               backgroundColor: AppColors.backgroundColor,
               flexibleSpace: LayoutBuilder(
-                builder: (context, constraints) {
-                  // Yüksekliği hesapla
-                  double percent =
-                      (constraints.maxHeight - kToolbarHeight) /
-                      (MediaQuery.of(context).size.height - kToolbarHeight);
-
-                  // Resim kaybolma animasyonu (opacity)
-                  double opacity = percent.clamp(0.0, 1.0);
-
-                  return Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Opacity(
-                        opacity: opacity,
-                        child: Image.asset(
-                          'assets/images/home-screen.png',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Container(
-                        color: AppColors.backgroundColor.withOpacity(
-                          0.8 * opacity,
-                        ), // Mistik gölge efekti
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Opacity(
-                            opacity: opacity, // Kaydırdıkça başlık da kaybolur
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Daily Tarot',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    letterSpacing: 1.5,
-                                    color: AppColors.primaryColor,
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  'Readings',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    letterSpacing: 1.5,
-                                    color: AppColors.accentColor,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Text(
-                                  "Unveil the mysteries the universe holds for you today.",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 16,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                builder:
+                    (context, constraints) => FlexibleSpaceBar(
+                      background: _buildFlexibleSpace(context, constraints),
+                    ),
               ),
             ),
             SliverList(
@@ -117,7 +96,6 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      backgroundColor: AppColors.backgroundColor,
     );
   }
 }

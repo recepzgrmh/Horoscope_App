@@ -10,16 +10,15 @@ class TarotCard extends StatelessWidget {
       color: AppColors.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
-        side: BorderSide(
-          color: AppColors.borderColor,
-          width: 1.5,
-        ), // Gotik çerçeve efekti
+        side: BorderSide(color: AppColors.borderColor, width: 1.5),
       ),
+      elevation: 4,
+      shadowColor: AppColors.secondaryColor.withOpacity(0.4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(16.0),
               topRight: Radius.circular(16.0),
             ),
@@ -37,28 +36,17 @@ class TarotCard extends StatelessWidget {
               children: [
                 Text(
                   "Today's Card",
-                  style: TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   "How can you nurture yourself today?",
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   "The Empress",
-                  style: TextStyle(
-                    color: AppColors.accentColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ],
             ),
