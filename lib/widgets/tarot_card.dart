@@ -1,28 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
+import 'package:horoscope/screens/tarot_detailScreen.dart';
 
 class TarotCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String imagePath;
-  final VoidCallback? onTap; // Tıklama özelliği eklendi
 
   const TarotCard({
     super.key,
     required this.title,
     required this.subtitle,
     required this.imagePath,
-    this.onTap, // Opsiyonel olarak onTap verilebilir
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap, // Tıklama işlevi buraya bağlanıyor
-      borderRadius: BorderRadius.circular(16.0), // Animasyon için
-      splashColor: AppColors.primaryColor.withOpacity(
-        0.2,
-      ), // Hafif tıklama efekti
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => TarotDetailScreen(
+                  title: title,
+                  subtitle: subtitle,
+                  imagePath: imagePath,
+                ),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(16.0),
+      splashColor: AppColors.primaryColor.withOpacity(0.2),
       child: Card(
         color: AppColors.cardColor,
         shape: RoundedRectangleBorder(

@@ -8,6 +8,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -22,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300), // Animasyon süresi
+      duration: const Duration(milliseconds: 300),
     );
     _scrollController.addListener(_handleScroll);
   }
@@ -39,9 +40,9 @@ class _HomeScreenState extends State<HomeScreen>
         });
 
         if (shouldShowBottomNav) {
-          _animationController.forward(); // NavBar'ı yavaşça aç
+          _animationController.forward();
         } else {
-          _animationController.reverse(); // NavBar'ı yavaşça kapat
+          _animationController.reverse();
         }
       }
     }
@@ -74,35 +75,26 @@ class _HomeScreenState extends State<HomeScreen>
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: TarotCard(
-                  title: "The Magician",
-                  subtitle: "Your potential is limitless today.",
+                  title: "Daily Horoscope",
+                  subtitle: "What does the day have in store for you?",
                   imagePath: "assets/images/daily.png",
-                  onTap: () {
-                    debugPrint("The Magician kartına tıklandı!");
-                    // Burada başka bir sayfaya yönlendirme yapabilirsin
-                  },
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: TarotCard(
-                  title: "The High Priestess",
-                  subtitle: "Trust your intuition.",
+                  title: "Weekly Horoscope",
+                  subtitle:
+                      "The universe has a message for your next seven days.",
                   imagePath: "assets/images/weekly.png",
-                  onTap: () {
-                    debugPrint("The High Priestess kartına tıklandı!");
-                  },
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: TarotCard(
-                  title: "The Fool",
-                  subtitle: "Embrace new beginnings.",
+                  title: "Monthly Horoscope",
+                  subtitle: "Use your energy wisely throughout the month.",
                   imagePath: "assets/images/monthly.png",
-                  onTap: () {
-                    debugPrint("The Fool kartına tıklandı!");
-                  },
                 ),
               ),
             ]),
