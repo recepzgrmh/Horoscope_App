@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:horoscope/screens/homeScreen.dart';
+import 'package:horoscope/screens/home_screen.dart';
 import 'package:horoscope/styles/app_theme.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +14,8 @@ Future<void> main() async {
   } catch (e) {
     print("❌ .env dosyası bulunamadı veya yüklenemedi. Hata: $e");
   }
+
+  Gemini.init(apiKey: dotenv.env['GEMINI_API_KEY'] ?? '');
 
   runApp(const MyApp());
 }

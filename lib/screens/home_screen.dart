@@ -1,10 +1,10 @@
-// ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/tarot_card.dart';
 import 'package:horoscope/widgets/custom_appbar.dart';
 import 'package:horoscope/widgets/bottom_nav.dart';
+import 'package:horoscope/screens/profile_screen.dart'; // ProfileScreen import ediliyor
+import 'package:horoscope/screens/readings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen>
   final ScrollController _scrollController = ScrollController();
   late AnimationController _animationController;
   bool _showBottomNav = false;
+  int _currentIndex = 0; // Seçili butonun index'ini tutuyor
 
   @override
   void initState() {
@@ -47,6 +48,26 @@ class _HomeScreenState extends State<HomeScreen>
         }
       }
     }
+  }
+
+  void _onBottomNavTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    // Örneğin index 2 profil butonuna karşılık geliyor
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ReadingsScreen()),
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    }
+    // Diğer index'ler için farklı yönlendirmeler ekleyebilirsiniz.
   }
 
   @override
@@ -106,7 +127,11 @@ class _HomeScreenState extends State<HomeScreen>
         duration: const Duration(milliseconds: 300),
         child:
             _showBottomNav
-                ? BottomNavBar(animationController: _animationController)
+                ? BottomNavBar(
+                  animationController: _animationController,
+                  currentIndex: _currentIndex,
+                  onTap: _onBottomNavTapped,
+                )
                 : const SizedBox.shrink(),
       ),
       backgroundColor: AppColors.backgroundColor,

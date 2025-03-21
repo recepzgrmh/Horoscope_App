@@ -30,35 +30,41 @@ class CustomAppBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    'Daily Tarot',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      letterSpacing: 1.5,
-                      color: AppColors.primaryColor,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
+                  Flexible(
+                    child: Text(
+                      'Daily Tarot',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        letterSpacing: 1.5,
+                        color: AppColors.primaryColor,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    'Readings',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      letterSpacing: 1.5,
-                      color: AppColors.accentColor,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
+                  Flexible(
+                    child: Text(
+                      'Readings',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        letterSpacing: 1.5,
+                        color: AppColors.accentColor,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text(
-                    "Unveil the mysteries the universe holds for you today.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 16,
-                      fontStyle: FontStyle.italic,
+                  Flexible(
+                    child: Text(
+                      "Unveil the mysteries the universe holds for you today.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 16,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
                   ),
                 ],
