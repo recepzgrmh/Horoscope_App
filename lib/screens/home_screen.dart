@@ -3,8 +3,9 @@ import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/tarot_card.dart';
 import 'package:horoscope/widgets/custom_appbar.dart';
 import 'package:horoscope/widgets/bottom_nav.dart';
-import 'package:horoscope/screens/profile_screen.dart'; // ProfileScreen import ediliyor
+import 'package:horoscope/screens/profile_screen.dart';
 import 'package:horoscope/screens/readings_screen.dart';
+// Diğer yanlış importlar kaldırıldı!
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
