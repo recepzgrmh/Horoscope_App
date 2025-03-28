@@ -4,15 +4,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'firebase_options.dart';
 import 'package:horoscope/wrapper.dart';
-import 'package:horoscope/styles/app_theme.dart';
-import 'package:get/get.dart'; // ✅ GetX paketini unutma!
+import 'package:get/get.dart';
+import 'package:horoscope/styles/app_theme.dart'; // Temayı dahil ettik
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
   try {
-    await _initializeFirebase(); // ✅ Firebase başlatmayı tek fonksiyon içine aldık
+    await _initializeFirebase();
   } catch (e) {
     print("🔥 Firebase Hatası: $e");
   }
@@ -22,10 +22,8 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-// ✅ Firebase başlatmayı kesinlikle tek seferlik yapan fonksiyon
 Future<void> _initializeFirebase() async {
   if (Firebase.apps.isEmpty) {
-    // ✅ Firebase zaten başlatılmış mı kontrol et
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -38,10 +36,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      // ✅ GetMaterialApp kullanmalısın!
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.theme, // Tema burada aktif
       home: const Wrapper(),
-      theme: AppTheme.theme,
     );
   }
 }

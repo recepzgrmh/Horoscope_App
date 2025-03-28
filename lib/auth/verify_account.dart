@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:horoscope/opening.dart';
 import 'package:horoscope/screens/home_screen.dart';
+import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -33,28 +34,30 @@ class _VerifyAccountState extends State<VerifyAccount> {
     }
   }
 
-  // Kullanıcının e-posta doğrulama durumunu kontrol eder
+  // Kullanıcının e-posta doğrulama durumunu kontrol eder ve tüm bilgileri kaydeder
   Future<void> checkVerification() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      await user.reload(); // Kullanıcı verilerini güncelleyin
+      await user.reload();
       if (user.emailVerified) {
-        final docSnapshot =
-            await FirebaseFirestore.instance
-                .collection("users")
-                .doc(user.uid)
-                .get();
-        if (!docSnapshot.exists) {
-          await FirebaseFirestore.instance
-              .collection("users")
-              .doc(user.uid)
-              .set({
-                "displayName": user.displayName,
-                "email": user.email,
-                "verifiedAt": DateTime.now(),
-              });
+        final docRef = FirebaseFirestore.instance
+            .collection("users")
+            .doc(user.uid);
+        final docSnapshot = await docRef.get();
+
+        if (docSnapshot.exists) {
+          final userData = docSnapshot.data() as Map<String, dynamic>?;
+
+          await docRef.set({
+            "verifiedAt": FieldValue.serverTimestamp(),
+            "birthDate": userData?["birthDate"] ?? "",
+            "gender":
+                userData?["gender"] ??
+                "", // `gender` bilgisi eksikse tamamlanıyor ✅
+            "zodiacSign": userData?["zodiacSign"] ?? "",
+          }, SetOptions(merge: true));
         }
-        // Doğrulama başarılı, anasayfaya yönlendir
+
         Get.offAll(() => const HomeScreen());
       } else {
         Get.snackbar(
@@ -88,14 +91,14 @@ class _VerifyAccountState extends State<VerifyAccount> {
                 child: Icon(
                   Icons.email_outlined,
                   size: 100,
-                  color: Colors.blue,
+                  color: AppColors.accentColor,
                 ),
               ),
               const SizedBox(height: 20),
               const Text(
                 "Lütfen mailinize gelen doğrulama linkine tıklayın",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, color: Colors.black87),
+                style: TextStyle(fontSize: 18, color: AppColors.primaryColor),
               ),
               const SizedBox(height: 30),
 
@@ -105,23 +108,15 @@ class _VerifyAccountState extends State<VerifyAccount> {
                 child: CustomButton(
                   label: "Devam Et",
                   onPressed: checkVerification,
-                  backgroundColor: Colors.blue,
+                  backgroundColor: AppColors.accentColor,
                   foregroundColor: Colors.white,
-                  verticalPadding: 16,
-                  minHeight: 48,
-                  elevation: 5,
-                  borderRadius: BorderRadius.zero,
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
                 ),
               ),
               const SizedBox(height: 30),
               const Text(
                 "Doğrulama maili ulaşmadı mı?",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.black54),
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
               const SizedBox(height: 15),
 
@@ -131,16 +126,8 @@ class _VerifyAccountState extends State<VerifyAccount> {
                 child: CustomButton(
                   label: "Tekrar Gönder",
                   onPressed: verifyAccount,
-                  backgroundColor: const Color(0xFFE8EEF2),
-                  foregroundColor: Colors.black,
-                  verticalPadding: 16,
-                  minHeight: 48,
-                  elevation: 5,
-                  borderRadius: BorderRadius.zero,
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  backgroundColor: AppColors.deactiveButton,
+                  foregroundColor: AppColors.primaryColor,
                 ),
               ),
               const SizedBox(height: 10),

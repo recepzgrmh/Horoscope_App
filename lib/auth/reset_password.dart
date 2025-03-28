@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:horoscope/widgets/text_inputs.dart';
 
@@ -29,49 +30,52 @@ class _ResetPasswordState extends State<ResetPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Klavye açıldığında taşma olmaması için
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        toolbarHeight: 80,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
-        toolbarHeight: 100,
+        elevation: 1,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Şifreni mi Unuttun?",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade900,
-                  ),
+          padding: const EdgeInsets.all(22.0),
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // Textleri sola hizalar
+            children: [
+              SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  'Şifreni mi Unuttun?',
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.start,
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  "Hesabınızla ilişkili e-posta adresini girin, size şifrenizi sıfırlamanız için bir bağlantı gönderelim.",
-                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              ),
+              SizedBox(height: 6),
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  'Hesabınızla ilişkili e-posta adresini girin, size şifrenizi sıfırlamanız için bir bağlantı gönderelim.',
+                  style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
+                  textAlign: TextAlign.start,
                 ),
-                const SizedBox(height: 40),
-                TextInputs(labelText: 'E-mail', controller: email),
-                const SizedBox(height: 20),
-                CustomButton(
-                  label: "Sıfırlama Linki Gönder",
-                  onPressed: resetPassword,
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  verticalPadding: 16,
-                  minHeight: 48,
-                  elevation: 3,
-                  borderRadius: const BorderRadius.all(Radius.circular(6)),
-                  textStyle: const TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
+              ),
+              SizedBox(height: 40),
+              TextInputs(labelText: 'E-mail', controller: email, isEmail: true),
+
+              SizedBox(height: 30),
+              CustomButton(
+                label: "Şifre Sıfırlama Linki Gönder",
+                onPressed: resetPassword,
+                backgroundColor: AppColors.accentColor,
+                foregroundColor: Colors.white,
+              ),
+            ],
           ),
         ),
       ),

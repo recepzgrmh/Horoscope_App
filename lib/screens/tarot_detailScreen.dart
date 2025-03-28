@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:horoscope/styles/app_colors.dart';
+import 'package:intl/intl.dart';
 
 class TarotDetailScreen extends StatefulWidget {
   final String title;
@@ -19,10 +20,11 @@ class TarotDetailScreen extends StatefulWidget {
 }
 
 class _TarotDetailScreenState extends State<TarotDetailScreen> {
-  String dailyMessage = "Bugünün burç mesajı burada olacak.";
+  String dailyMessage = "Bugünün burç mesajı burada olacak...";
   final gemini = Gemini.instance;
   bool _isLoading = false;
 
+  /*
   @override
   void initState() {
     super.initState();
@@ -33,12 +35,18 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
     setState(() {
       _isLoading = true;
     });
+
+    // Günün tarihini al ve formatla (örnek: 2024-03-23)
+    String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
     try {
       final response = await gemini.text(
-        "Tarot uygulamanız için mistik bir tonda benzersiz bir günlük burç mesajı oluşturun.",
+        "Bugün tarih: $currentDate. Kullanıcı için günlük tarot kartı okuması yap. "
+        "Mistisizmi artır, ruhani bir mesaj ver. Astrolojik terimler kullanarak detaylı bir günlük yorum oluştur.",
       );
+
       setState(() {
-        dailyMessage = response?.output ?? "Mesaj oluşturulamadı.";
+        dailyMessage = response?.output ?? "Bugünün yorumu oluşturulamadı.";
       });
     } catch (e) {
       setState(() {
@@ -51,13 +59,17 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
     }
   }
 
+  */
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         title: Text(widget.title),
+        backgroundColor: AppColors.backgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -65,37 +77,51 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : ListView(
-                // ListView ile sarmalıyoruz
+                padding: const EdgeInsets.all(16.0),
                 children: [
-                  Image.asset(
-                    widget.imagePath,
-                    width: double.infinity,
-                    height: 300,
-                    fit: BoxFit.cover,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      widget.imagePath,
+                      width: double.infinity,
+                      height: 300,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          widget.title,
-                          style: Theme.of(context).textTheme.displayLarge,
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          widget.subtitle,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          dailyMessage,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          textAlign: TextAlign.center,
+                  Text(
+                    widget.title,
+                    style: Theme.of(context).textTheme.displayLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.subtitle,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.borderColor,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 6,
+                          offset: const Offset(2, 2),
                         ),
                       ],
+                    ),
+                    child: Text(
+                      dailyMessage,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],
