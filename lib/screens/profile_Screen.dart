@@ -4,6 +4,7 @@ import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -22,6 +23,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     fetchUserData();
   }
 
+  Future<int?> calculateAge(String birthDateString) async {
+    if (birthDateString.isEmpty) return null;
+
+    DateFormat inputFormat = DateFormat('dd-MM-yyyy');
+    DateTime birthDate = inputFormat.parse(birthDateString);
+
+    DateTime today = DateTime.now();
+
+    int age = today.year - birthDate.year;
+    if (today.month < birthDate.month ||
+        (today.month == birthDate.month && today.day < birthDate.day)) {
+      age--;
+    }
+
+    return age;
+  }
+
   Future<void> fetchUserData() async {
     if (user != null) {
       DocumentSnapshot doc =
@@ -31,9 +49,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               .get();
 
       if (doc.exists) {
-        setState(() {
-          userData = doc.data() as Map<String, dynamic>;
-        });
+        userData = doc.data() as Map<String, dynamic>;
+
+        if ((userData?["birthDate"] ?? "").isNotEmpty) {
+          int? userAge = await calculateAge(userData?["birthDate"]);
+
+          if (userAge != null) {
+            userData!["age"] = userAge.toString();
+
+            // Kullanıcı yaşını Firestore'a güncelle
+            await FirebaseFirestore.instance
+                .collection("users")
+                .doc(user!.uid)
+                .update({"age": userAge.toString()});
+          }
+        }
+
+        setState(() {});
       }
     }
   }
@@ -98,6 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       "Burç",
                       userData?["zodiacSign"] ?? "Bilgi Eksik",
                     ),
+                    profileItem("Yaş", userData?["age"] ?? "Bilgi Eksik"),
 
                     const SizedBox(height: 40),
 

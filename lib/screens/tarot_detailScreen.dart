@@ -20,7 +20,8 @@ class TarotDetailScreen extends StatefulWidget {
 }
 
 class _TarotDetailScreenState extends State<TarotDetailScreen> {
-  String dailyMessage = "Bugünün burç mesajı burada olacak...";
+  String dailyMessage =
+      "Sevgili Gizem, bugün iletişim becerilerin ve yaratıcılığın oldukça güçlü. Yeni insanlarla tanışmak, fikir alışverişinde bulunmak ve sosyal ilişkilerini geliştirmek için harika bir gün. İlgi alanlarına yönelik farklı aktiviteler keşfedebilir, kısa geziler ya da spontane buluşmalarla kendini yenileyebilirsin.Duygusal anlamda ise içsel olarak güçlü ve kararlı hissedeceğin bir gündesin. Bugün isteklerin konusunda daha net adımlar atabilir, ilişkilerde belirsiz durumlara son verebilirsin. Kendine inanarak ilerlemen, çevrendeki insanların da seninle olan bağlarını güçlendirecek.";
   final gemini = Gemini.instance;
   bool _isLoading = false;
 

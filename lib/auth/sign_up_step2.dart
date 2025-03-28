@@ -101,7 +101,7 @@ class _SignUpStep2State extends State<SignUpStep2> {
 
     if (pickedDate != null) {
       setState(() {
-        birthDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+        birthDateController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
       });
     }
   }

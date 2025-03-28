@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:horoscope/opening.dart';
 import 'package:horoscope/auth/verify_account.dart';
-import 'package:horoscope/screens/home_screen.dart'; // ✅ düzeltildi!
+import 'package:horoscope/screens/animated_home_screen.dart';
+import 'package:horoscope/screens/main_screen.dart';
 
 class Wrapper extends StatefulWidget {
   const Wrapper({super.key});
@@ -29,12 +30,14 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder(
+      body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data!.emailVerified) {
-              return const HomeScreen(); // <-- Düzeltildi
+              // Her cold start'te AnimatedHomeScreen gösterilsin,
+              // AnimatedHomeScreen içindeki timer tamamlandığında MainScreen'e geçiş yapsın.
+              return const AnimatedHomeScreen();
             } else {
               return const VerifyAccount();
             }

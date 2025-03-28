@@ -95,6 +95,34 @@ class _SignUpStep1State extends State<SignUpStep1> {
               CustomButton(
                 label: "İleri",
                 onPressed: () {
+                  if (fullName.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text("İsim boş olamaz.")));
+                    return;
+                  }
+
+                  if (lastName.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Soyisim boş olamaz.")),
+                    );
+                    return;
+                  }
+
+                  if (email.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("E-mail boş olamaz.")),
+                    );
+                    return;
+                  }
+
+                  if (password.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Şifre boş olamaz.")),
+                    );
+                    return;
+                  }
+
                   if (gender == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Lütfen cinsiyetinizi seçiniz.")),
@@ -107,8 +135,7 @@ class _SignUpStep1State extends State<SignUpStep1> {
                     lastName: lastName.text.trim(),
                     email: email.text.trim(),
                     password: password.text.trim(),
-                    gender:
-                        gender!, // Gender bilgisi artık `UserModel`'e ekleniyor!
+                    gender: gender!,
                   );
 
                   Get.to(() => SignUpStep2(user: user));

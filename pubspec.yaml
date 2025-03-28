@@ -20,6 +20,7 @@ dependencies:
   cloud_firestore: ^5.6.5
   intl: ^0.20.2
   material_design_icons_flutter: ^7.0.7296
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
