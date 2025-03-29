@@ -46,7 +46,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
         final docSnapshot = await docRef.get();
 
         if (docSnapshot.exists) {
-          final userData = docSnapshot.data() as Map<String, dynamic>?;
+          final userData = docSnapshot.data();
 
           await docRef.set({
             "verifiedAt": FieldValue.serverTimestamp(),

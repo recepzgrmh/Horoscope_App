@@ -36,10 +36,9 @@ class TarotCard extends StatelessWidget {
         color: AppColors.cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
-          side: BorderSide(color: AppColors.borderColor, width: 1.5),
         ),
-        elevation: 4,
-        shadowColor: AppColors.secondaryColor.withOpacity(0.4),
+        elevation: 6,
+        shadowColor: Colors.black.withOpacity(0.4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -64,14 +63,15 @@ class TarotCard extends StatelessWidget {
                     title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white,
-                    ), // Beyaz renk override edildi
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
-                    ), // Beyaz renk override edildi
+                      color: Colors.white.withOpacity(0.8),
+                    ),
                   ),
                 ],
               ),

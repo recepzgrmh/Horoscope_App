@@ -6,7 +6,6 @@ import 'package:horoscope/models/user_model.dart';
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:horoscope/widgets/text_inputs.dart';
-import 'package:horoscope/wrapper.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:horoscope/auth/verify_account.dart';

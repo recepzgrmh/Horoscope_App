@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:horoscope/auth/sign_up_step2.dart';
 import 'package:horoscope/styles/app_colors.dart';

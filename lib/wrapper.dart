@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:horoscope/opening.dart';
 import 'package:horoscope/auth/verify_account.dart';
 import 'package:horoscope/screens/animated_home_screen.dart';
-import 'package:horoscope/screens/main_screen.dart';
 
 class Wrapper extends StatefulWidget {
   const Wrapper({super.key});
