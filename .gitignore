@@ -48,6 +48,7 @@ app.*.map.json
 .env.production
 .env.development
 *.secrets
+kendim için text.txt
 
 # 🚀 Firebase ve Google Services Dosyalarını Gizle
 android/app/google-services.json

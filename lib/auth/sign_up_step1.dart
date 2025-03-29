@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:horoscope/auth/sign_up_step2.dart';
-import 'package:horoscope/styles/app_colors.dart';
-import 'package:horoscope/widgets/custom_button.dart';
-import 'package:horoscope/widgets/text_inputs.dart';
 import 'package:get/get.dart';
-import 'package:horoscope/models/user_model.dart';
+import '../models/user_model.dart';
+import '../widgets/auth_forms.dart';
+import '../widgets/auth_text_inputs.dart';
+import '../widgets/auth_buttons.dart';
+import 'sign_up_step2.dart';
 
 class SignUpStep1 extends StatefulWidget {
   const SignUpStep1({super.key});
@@ -20,130 +20,78 @@ class _SignUpStep1State extends State<SignUpStep1> {
   final TextEditingController lastName = TextEditingController();
   String? gender;
 
+  void nextStep() {
+    if (fullName.text.trim().isEmpty ||
+        lastName.text.trim().isEmpty ||
+        email.text.trim().isEmpty ||
+        password.text.trim().isEmpty ||
+        gender == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Lütfen tüm alanları doldurun.")));
+      return;
+    }
+
+    UserModel user = UserModel(
+      fullName: fullName.text.trim(),
+      lastName: lastName.text.trim(),
+      email: email.text.trim(),
+      password: password.text.trim(),
+      gender: gender!,
+    );
+
+    Get.to(() => SignUpStep2(user: user));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        toolbarHeight: 80,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        elevation: 1,
-      ),
+      appBar: AppBar(toolbarHeight: 80, leading: BackButton()),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(22.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 10),
-              Text(
-                'Hesap Oluştur',
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.start,
-              ),
-              SizedBox(height: 6),
-              Text(
-                'Başlamak İçin Kayıt Olun!',
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.start,
-              ),
-              SizedBox(height: 40),
-              TextInputs(labelText: 'Ad', controller: fullName),
-              SizedBox(height: 20),
-              TextInputs(labelText: 'SoyAd', controller: lastName),
-              SizedBox(height: 20),
-              TextInputs(labelText: 'E-mail', controller: email, isEmail: true),
-              SizedBox(height: 20),
-              TextInputs(
-                labelText: 'Şifre',
-                controller: password,
-                isPassword: true,
-              ),
-              SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  labelText: "Cinsiyet Seçiniz",
+        child: AuthForm(
+          title: 'Hesap Oluştur',
+          subtitle: 'Başlamak için kayıt olun!',
+          children: [
+            AuthTextInput(labelText: 'Ad', controller: fullName),
+            const SizedBox(height: 20),
+            AuthTextInput(labelText: 'Soyad', controller: lastName),
+            const SizedBox(height: 20),
+            AuthTextInput(
+              labelText: 'E-mail',
+              controller: email,
+              isEmail: true,
+            ),
+            const SizedBox(height: 20),
+            AuthTextInput(
+              labelText: 'Şifre',
+              controller: password,
+              isPassword: true,
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                value: gender,
-                items:
-                    ["Erkek", "Kadın", "Diğer"].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    gender = newValue!;
-                  });
-                },
+                labelText: "Cinsiyet Seçiniz",
               ),
-              SizedBox(height: 20),
-              Text(
-                "Devam ederek Kullanım Şartları'nı kabul etmiş olursunuz.\nGizlilik Politikamızı okuyun.",
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.start,
-              ),
-              SizedBox(height: 30),
-              CustomButton(
-                label: "İleri",
-                onPressed: () {
-                  if (fullName.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text("İsim boş olamaz.")));
-                    return;
-                  }
-
-                  if (lastName.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Soyisim boş olamaz.")),
+              value: gender,
+              items:
+                  ["Erkek", "Kadın", "Diğer"].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
                     );
-                    return;
-                  }
-
-                  if (email.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("E-mail boş olamaz.")),
-                    );
-                    return;
-                  }
-
-                  if (password.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Şifre boş olamaz.")),
-                    );
-                    return;
-                  }
-
-                  if (gender == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Lütfen cinsiyetinizi seçiniz.")),
-                    );
-                    return;
-                  }
-
-                  UserModel user = UserModel(
-                    fullName: fullName.text.trim(),
-                    lastName: lastName.text.trim(),
-                    email: email.text.trim(),
-                    password: password.text.trim(),
-                    gender: gender!,
-                  );
-
-                  Get.to(() => SignUpStep2(user: user));
-                },
-                backgroundColor: AppColors.accentColor,
-                foregroundColor: Colors.white,
-              ),
-            ],
-          ),
+                  }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  gender = newValue!;
+                });
+              },
+            ),
+            const SizedBox(height: 30),
+            AuthButton(label: "İleri", onPressed: nextStep),
+          ],
         ),
       ),
     );

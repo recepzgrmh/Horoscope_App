@@ -1,12 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:horoscope/auth/reset_password.dart';
-import 'package:horoscope/styles/app_colors.dart';
-import 'package:horoscope/widgets/custom_button.dart';
-import 'package:horoscope/widgets/text_inputs.dart';
-import 'package:horoscope/wrapper.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../widgets/auth_forms.dart';
+import '../widgets/auth_text_inputs.dart';
+import '../widgets/auth_buttons.dart';
+import 'reset_password.dart';
 import 'sign_up_step1.dart';
+import '../wrapper.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -19,7 +19,6 @@ class _SignInState extends State<SignIn> {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
 
-  // Giriş yapma fonksiyonu
   Future<void> signInUser() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
@@ -28,17 +27,10 @@ class _SignInState extends State<SignIn> {
             password: password.text.trim(),
           );
 
-      User? user = userCredential.user;
-
-      if (user != null) {
-        print("🔥 Kullanıcı giriş yaptı: \${user.email}");
-        print("📌 Kullanıcı UID: \${user.uid}");
-
-        // Ana ekrana yönlendir
+      if (userCredential.user != null) {
         Get.offAll(() => const Wrapper());
       }
     } catch (e) {
-      print("🚨 Firebase Giriş Hatası: $e");
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Giriş yapılamadı: $e")));
@@ -48,81 +40,38 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Klavye açıldığında taşma olmaması için
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        toolbarHeight: 80,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        elevation: 1,
-      ),
+      appBar: AppBar(toolbarHeight: 80, leading: BackButton()),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(22.0),
-          child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start, // Textleri sola hizalar
-            children: [
-              SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                child: Text(
-                  'Tekrar Hoşgeldin!',
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.start,
-                ),
-              ),
-              SizedBox(height: 6),
-              SizedBox(
-                width: double.infinity,
-                child: Text(
-                  'Devam etmek için gerekli yerleri doldurun.',
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.start,
-                ),
-              ),
-              SizedBox(height: 40),
-              TextInputs(labelText: 'E-mail', controller: email, isEmail: true),
-              SizedBox(height: 20),
-              TextInputs(
-                labelText: 'Şifre',
-                controller: password,
-                isPassword: true,
-              ),
-              SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: Text(
-                  "Devam ederek Kullanım Şartları'nı kabul etmiş olursunuz.\nGizlilik Politikamızı okuyun.",
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.start,
-                ),
-              ),
-              SizedBox(height: 30),
-              CustomButton(
-                label: "Giriş Yap",
-                onPressed: signInUser,
-                backgroundColor: AppColors.accentColor,
-                foregroundColor: Colors.white,
-              ),
-              const SizedBox(height: 20),
-              CustomButton(
-                label: "Şifremi Unuttum",
-                onPressed: () => Get.to(const ResetPassword()),
-                backgroundColor: AppColors.deactiveButton,
-                foregroundColor: AppColors.primaryColor,
-              ),
-              const SizedBox(height: 10),
-              CustomButton(
-                label: "Şimdi Hesap Oluştur",
-                onPressed: () => Get.to(const SignUpStep1()),
-                backgroundColor: AppColors.deactiveButton,
-                foregroundColor: AppColors.primaryColor,
-              ),
-            ],
-          ),
+        child: AuthForm(
+          title: 'Tekrar Hoşgeldin!',
+          subtitle: 'Devam etmek için gerekli yerleri doldurun.',
+          children: [
+            AuthTextInput(
+              labelText: 'E-mail',
+              controller: email,
+              isEmail: true,
+            ),
+            const SizedBox(height: 20),
+            AuthTextInput(
+              labelText: 'Şifre',
+              controller: password,
+              isPassword: true,
+            ),
+            const SizedBox(height: 30),
+            AuthButton(label: "Giriş Yap", onPressed: signInUser),
+            const SizedBox(height: 20),
+            AuthButton(
+              label: "Şifremi Unuttum",
+              onPressed: () => Get.to(const ResetPassword()),
+              isPrimary: false,
+            ),
+            const SizedBox(height: 10),
+            AuthButton(
+              label: "Şimdi Hesap Oluştur",
+              onPressed: () => Get.to(const SignUpStep1()),
+              isPrimary: false,
+            ),
+          ],
         ),
       ),
     );

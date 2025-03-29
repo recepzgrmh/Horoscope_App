@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:horoscope/opening.dart';
+import 'package:horoscope/screens/animated_home_screen.dart';
 import 'package:horoscope/screens/home_screen.dart';
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
@@ -58,7 +59,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
           }, SetOptions(merge: true));
         }
 
-        Get.offAll(() => const HomeScreen());
+        Get.offAll(() => AnimatedHomeScreen());
       } else {
         Get.snackbar(
           "Hesap Doğrulanmadı",
