@@ -7,6 +7,22 @@ import 'package:horoscope/widgets/tarot_card.dart';
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
 
+  // 📌 **Otomatik Zodiac Resim Listesi**
+  static const List<String> zodiacSigns = [
+    "aquarius",
+    "aries",
+    "cancer",
+    "capricorn",
+    "gemini",
+    "leo",
+    "libra",
+    "pisces",
+    "sagittarius",
+    "scorpio",
+    "taurus",
+    "virgo",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -58,12 +74,13 @@ class HomeContent extends StatelessWidget {
           child: SocialWidget(),
         ),
 
-        // 📌 Community Bölümü (Resmin Üzerine Yazı Eklenmiş Hali)
+        // 📌 **Community Bölümü (Alta Alta Büyük Resimler ile)**
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 30),
               // Başlık
               Text(
                 'Community',
@@ -74,46 +91,64 @@ class HomeContent extends StatelessWidget {
                 ),
                 textAlign: TextAlign.start,
               ),
+              SizedBox(height: 10),
+              Text(
+                'Connect with Others Who Share Your Sign',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w400,
+                ),
+                textAlign: TextAlign.start,
+              ),
               const SizedBox(height: 12),
 
-              // 📌 Resim Üstüne Metin Eklenen Stack
-              Stack(
-                children: [
-                  // Arka Plan Resmi
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      'assets/images/weekly.png',
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+              // 📌 **Alta Alta Büyük Zodiac Resimleri**
+              Column(
+                children:
+                    zodiacSigns.map((imageName) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0, top: 16),
+                        child: Stack(
+                          children: [
+                            // 📌 **Resim**
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Image.asset(
+                                "assets/images/zodiac-signs/$imageName.jpeg",
+                                width: double.infinity,
+                                height: 200,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
 
-                  // Üstteki Metin
-                  Positioned(
-                    left: 20,
-                    bottom: 20,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Text(
-                        'Discover What the Community is Saying',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                            // 📌 **Üstüne Metin**
+                            Positioned(
+                              left: 20,
+                              bottom: 20,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  imageName.toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                  ),
-                ],
+                      );
+                    }).toList(),
               ),
             ],
           ),
