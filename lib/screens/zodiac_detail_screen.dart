@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:horoscope/widgets/custom_button.dart';
 import 'package:horoscope/styles/app_colors.dart';
+import 'package:horoscope/widgets/custom_button.dart';
+import 'package:get/get.dart';
 
 class ZodiacDetailScreen extends StatelessWidget {
   final String zodiacName;
@@ -23,9 +24,8 @@ class ZodiacDetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 📌 **Burç Resmi (İçeriği Yukarı Kaydırılmış)**
               Container(
-                height: screenHeight * 0.7, // 📌 **Ekranın %50'sini kaplasın**
+                height: screenHeight * 0.7,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(30),
@@ -33,20 +33,12 @@ class ZodiacDetailScreen extends StatelessWidget {
                   ),
                   image: DecorationImage(
                     image: AssetImage(imagePath),
-                    fit:
-                        BoxFit
-                            .cover, // ✅ **Resmin içeriğini kaplayacak şekilde ölçekler**
-                    alignment: Alignment(
-                      0,
-                      0.8,
-                    ), // ✅ **İçeriği yukarı kaydırır**
+                    fit: BoxFit.cover,
+                    alignment: const Alignment(0, 0.8),
                   ),
                 ),
               ),
-
               const SizedBox(height: 10),
-
-              // 📌 **Burç Açıklaması**
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
@@ -55,20 +47,16 @@ class ZodiacDetailScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // 📌 **Geri Dön Butonu**
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: CustomButton(
                   label: 'Geri Dön',
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Get.back(),
                   backgroundColor: AppColors.accentColor,
                   foregroundColor: AppColors.primaryColor,
                 ),
               ),
-
               const SizedBox(height: 30),
             ],
           ),

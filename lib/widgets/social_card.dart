@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
+import 'package:get/get.dart';
+import 'package:horoscope/screens/zodiac_detail_screen.dart';
 
 class SocialCard extends StatelessWidget {
   final String title;
@@ -7,7 +9,7 @@ class SocialCard extends StatelessWidget {
   final String buttonText;
   final String imagePath;
   final VoidCallback onPressed;
-  final bool isReversed; // Eğer true ise görsel sol tarafta olur
+  final bool isReversed;
 
   const SocialCard({
     super.key,
@@ -38,9 +40,7 @@ class SocialCard extends StatelessWidget {
         ),
         child: Row(
           children:
-              isReversed
-                  ? _buildReversedContent() // Görsel solda, metin sağda olacak
-                  : _buildDefaultContent(), // Metin solda, görsel sağda olacak
+              isReversed ? _buildReversedContent() : _buildDefaultContent(),
         ),
       ),
     );
@@ -48,7 +48,6 @@ class SocialCard extends StatelessWidget {
 
   List<Widget> _buildDefaultContent() {
     return [
-      // Sol tarafta metin içeriği
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,10 +89,7 @@ class SocialCard extends StatelessWidget {
           ],
         ),
       ),
-
       const SizedBox(width: 16),
-
-      // Sağ tarafta görsel
       ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Image.asset(
@@ -108,7 +104,6 @@ class SocialCard extends StatelessWidget {
 
   List<Widget> _buildReversedContent() {
     return [
-      // Sol tarafta görsel
       ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Image.asset(
@@ -118,9 +113,7 @@ class SocialCard extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-
-      const SizedBox(width: 16), // Görsel ile metin arasına boşluk ekle
-      // Sağ tarafta metin içeriği
+      const SizedBox(width: 16),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,

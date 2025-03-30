@@ -4,6 +4,7 @@ import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/home_content.dart';
 import 'package:horoscope/widgets/custom_appbar.dart';
 import 'package:horoscope/widgets/bottom_nav.dart';
+import 'package:get/get.dart';
 
 class AnimatedHomeScreen extends StatefulWidget {
   const AnimatedHomeScreen({super.key});
@@ -17,7 +18,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
   final ScrollController _scrollController = ScrollController();
   late AnimationController _animationController;
   bool _showBottomNav = false;
-  int _currentIndex = 0; // Seçili butonun index'ini tutuyor
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -39,7 +40,6 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
         setState(() {
           _showBottomNav = shouldShowBottomNav;
         });
-
         if (shouldShowBottomNav) {
           _animationController.forward();
         } else {
@@ -53,10 +53,8 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
     setState(() {
       _currentIndex = index;
     });
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => MainScreen(initialIndex: index)),
-    );
+    // Navigator yerine Get navigasyonu kullanıldı:
+    Get.offAll(() => MainScreen(initialIndex: index));
   }
 
   @override
@@ -89,11 +87,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
               },
             ),
           ),
-
-          // 📌 Ortak İçerik
-          SliverToBoxAdapter(
-            child: HomeContent(), // 📌 Yeni ortak bileşeni çağırıyoruz
-          ),
+          SliverToBoxAdapter(child: HomeContent()),
         ],
       ),
       bottomNavigationBar: AnimatedSwitcher(

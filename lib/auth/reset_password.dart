@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/services/auth_services.dart';
+
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:horoscope/widgets/text_inputs.dart';
+import 'package:get/get.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({super.key});
@@ -30,13 +32,12 @@ class _ResetPasswordState extends State<ResetPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Klavye açıldığında taşma olmaması için
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         toolbarHeight: 80,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
         ),
         elevation: 1,
       ),
