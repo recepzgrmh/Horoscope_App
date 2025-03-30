@@ -33,7 +33,7 @@ class AuthForm extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.start,
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 20),
           ...children,
         ],
       ),

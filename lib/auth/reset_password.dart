@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:horoscope/auth/sign_in.dart';
 import 'package:horoscope/services/auth_services.dart';
-
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:horoscope/widgets/text_inputs.dart';
@@ -19,13 +19,29 @@ class _ResetPasswordState extends State<ResetPassword> {
   Future<void> resetPassword() async {
     try {
       await AuthService.resetPassword(email: email.text);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Reset link sent!")));
+      Get.snackbar(
+        "Link Gönderildi",
+        "Reset link sent!",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.cardColor,
+        colorText: AppColors.primaryColor,
+      );
+      // 3 saniye bekledikten sonra, SignIn ekranına fadeIn animasyonu ile geçiş yap.
+      Future.delayed(const Duration(seconds: 2), () {
+        Get.off(
+          () => const SignIn(),
+          transition: Transition.fadeIn,
+          duration: const Duration(milliseconds: 500),
+        );
+      });
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+      Get.snackbar(
+        "Link Gönderilemedi",
+        "$e",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.cardColor,
+        colorText: AppColors.primaryColor,
+      );
     }
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:horoscope/services/auth_services.dart';
-
+import 'package:horoscope/styles/app_colors.dart';
 import '../widgets/auth_forms.dart';
 import '../widgets/auth_text_inputs.dart';
 import '../widgets/auth_buttons.dart';
@@ -17,44 +17,82 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
 
   Future<void> signInUser() async {
-    try {
-      final user = await AuthService.signIn(
-        email: email.text,
-        password: password.text,
-      );
-      if (user != null) {
-        Get.offAll(() => const Wrapper());
+    if (_formKey.currentState!.validate()) {
+      try {
+        final user = await AuthService.signIn(
+          email: email.text,
+          password: password.text,
+        );
+        if (user != null) {
+          Get.offAll(() => const Wrapper());
+        }
+      } catch (e) {
+        Get.snackbar(
+          "Giriş Yapılamadı",
+          "$e",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.cardColor,
+          colorText: AppColors.primaryColor,
+        );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Giriş yapılamadı: $e")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(toolbarHeight: 80, leading: BackButton()),
+      appBar: AppBar(
+        toolbarHeight: 80,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: SafeArea(
         child: AuthForm(
           title: 'Tekrar Hoşgeldin!',
           subtitle: 'Devam etmek için gerekli yerleri doldurun.',
           children: [
-            AuthTextInput(
-              labelText: 'E-mail',
-              controller: email,
-              isEmail: true,
-            ),
-            const SizedBox(height: 20),
-            AuthTextInput(
-              labelText: 'Şifre',
-              controller: password,
-              isPassword: true,
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  AuthTextInput(
+                    labelText: 'E-mail',
+                    controller: email,
+                    isEmail: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen email giriniz';
+                      }
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Geçerli bir email giriniz';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  AuthTextInput(
+                    labelText: 'Şifre',
+                    controller: password,
+                    isPassword: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen şifre giriniz';
+                      }
+                      if (value.length < 6) {
+                        return 'Şifre en az 6 karakter olmalı';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 30),
             AuthButton(label: "Giriş Yap", onPressed: signInUser),

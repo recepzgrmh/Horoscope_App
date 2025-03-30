@@ -14,6 +14,7 @@ class SignUpStep1 extends StatefulWidget {
 }
 
 class _SignUpStep1State extends State<SignUpStep1> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController fullName = TextEditingController();
@@ -21,73 +22,119 @@ class _SignUpStep1State extends State<SignUpStep1> {
   String? gender;
 
   void nextStep() {
-    if (fullName.text.trim().isEmpty ||
-        lastName.text.trim().isEmpty ||
-        email.text.trim().isEmpty ||
-        password.text.trim().isEmpty ||
-        gender == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Lütfen tüm alanları doldurun.")));
-      return;
+    if (_formKey.currentState!.validate()) {
+      UserModel user = UserModel(
+        fullName: fullName.text.trim(),
+        lastName: lastName.text.trim(),
+        email: email.text.trim(),
+        password: password.text.trim(),
+        gender: gender!,
+      );
+
+      Get.to(() => SignUpStep2(user: user));
     }
-
-    UserModel user = UserModel(
-      fullName: fullName.text.trim(),
-      lastName: lastName.text.trim(),
-      email: email.text.trim(),
-      password: password.text.trim(),
-      gender: gender!,
-    );
-
-    Get.to(() => SignUpStep2(user: user));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(toolbarHeight: 80, leading: BackButton()),
+      appBar: AppBar(
+        toolbarHeight: 80,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: SafeArea(
         child: AuthForm(
           title: 'Hesap Oluştur',
           subtitle: 'Başlamak için kayıt olun!',
           children: [
-            AuthTextInput(labelText: 'Ad', controller: fullName),
-            const SizedBox(height: 20),
-            AuthTextInput(labelText: 'Soyad', controller: lastName),
-            const SizedBox(height: 20),
-            AuthTextInput(
-              labelText: 'E-mail',
-              controller: email,
-              isEmail: true,
-            ),
-            const SizedBox(height: 20),
-            AuthTextInput(
-              labelText: 'Şifre',
-              controller: password,
-              isPassword: true,
-            ),
-            const SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                labelText: "Cinsiyet Seçiniz",
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  AuthTextInput(
+                    labelText: 'Ad',
+                    controller: fullName,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen adınızı giriniz';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  AuthTextInput(
+                    labelText: 'Soyad',
+                    controller: lastName,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen soyadınızı giriniz';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  AuthTextInput(
+                    labelText: 'E-mail',
+                    controller: email,
+                    isEmail: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen email giriniz';
+                      }
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Geçerli bir email giriniz';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  AuthTextInput(
+                    labelText: 'Şifre',
+                    controller: password,
+                    isPassword: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen şifre giriniz';
+                      }
+                      if (value.length < 6) {
+                        return 'Şifre en az 6 karakter olmalı';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      labelText: "Cinsiyet Seçiniz",
+                    ),
+                    value: gender,
+                    items:
+                        ["Erkek", "Kadın", "Diğer"].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        gender = newValue!;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen cinsiyet seçiniz';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
               ),
-              value: gender,
-              items:
-                  ["Erkek", "Kadın", "Diğer"].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  gender = newValue!;
-                });
-              },
             ),
             const SizedBox(height: 30),
             AuthButton(label: "İleri", onPressed: nextStep),

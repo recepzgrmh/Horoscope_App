@@ -6,6 +6,7 @@ class AuthTextInput extends StatelessWidget {
   final TextEditingController controller;
   final bool isPassword;
   final bool isEmail;
+  final String? Function(String?)? validator; // Yeni validatör parametresi
 
   const AuthTextInput({
     super.key,
@@ -13,6 +14,7 @@ class AuthTextInput extends StatelessWidget {
     required this.controller,
     this.isPassword = false,
     this.isEmail = false,
+    this.validator,
   });
 
   @override
@@ -22,6 +24,7 @@ class AuthTextInput extends StatelessWidget {
       controller: controller,
       isPassword: isPassword,
       isEmail: isEmail,
+      validator: validator,
     );
   }
 }

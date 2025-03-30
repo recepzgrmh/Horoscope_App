@@ -5,6 +5,7 @@ class TextInputs extends StatefulWidget {
   final TextEditingController controller;
   final bool isPassword;
   final bool isEmail;
+  final String? Function(String?)? validator; // Yeni validatör parametresi
 
   const TextInputs({
     super.key,
@@ -12,6 +13,7 @@ class TextInputs extends StatefulWidget {
     required this.controller,
     this.isPassword = false,
     this.isEmail = false,
+    this.validator,
   });
 
   @override
@@ -28,6 +30,7 @@ class _TextInputsState extends State<TextInputs> {
       obscureText: widget.isPassword ? _obscureText : false,
       keyboardType:
           widget.isEmail ? TextInputType.emailAddress : TextInputType.text,
+      validator: widget.validator, // Validatör eklendi
       decoration: InputDecoration(
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
         labelText: widget.labelText,
