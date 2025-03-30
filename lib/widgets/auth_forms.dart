@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'auth_text_inputs.dart';
-import 'auth_buttons.dart';
 
 class AuthForm extends StatelessWidget {
   final String title;

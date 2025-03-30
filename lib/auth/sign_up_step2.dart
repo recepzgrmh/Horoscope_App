@@ -6,6 +6,7 @@ import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/auth_forms.dart';
 import 'package:horoscope/widgets/auth_text_inputs.dart';
 import 'package:horoscope/widgets/auth_buttons.dart';
+import 'package:horoscope/widgets/loading_overlay.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'verify_account.dart';
@@ -55,6 +56,7 @@ class _SignUpStep2State extends State<SignUpStep2> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController birthDateController = TextEditingController();
   String? selectedZodiac;
+  bool isLoading = false;
 
   final List<Map<String, dynamic>> zodiacSigns = [
     {"name": "Koç", "icon": MdiIcons.zodiacAries},
@@ -72,11 +74,11 @@ class _SignUpStep2State extends State<SignUpStep2> {
   ];
 
   Future<void> registerUser() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
-
+    setState(() {
+      isLoading = true;
+    });
     // Eğer doğum tarihi ve burç seçilmişse, uyum kontrolü yap
     if (birthDateController.text.isNotEmpty &&
         selectedZodiac != null &&
@@ -91,6 +93,9 @@ class _SignUpStep2State extends State<SignUpStep2> {
         backgroundColor: AppColors.cardColor,
         colorText: AppColors.primaryColor,
       );
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
 
@@ -101,7 +106,11 @@ class _SignUpStep2State extends State<SignUpStep2> {
         zodiacSign: selectedZodiac,
       );
       if (firebaseUser != null) {
-        Get.offAll(() => const VerifyAccount());
+        Get.offAll(
+          () => const VerifyAccount(),
+          transition: Transition.fadeIn,
+          duration: const Duration(milliseconds: 500),
+        );
       }
     } catch (e) {
       Get.snackbar(
@@ -111,10 +120,14 @@ class _SignUpStep2State extends State<SignUpStep2> {
         backgroundColor: AppColors.cardColor,
         colorText: AppColors.primaryColor,
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
-  // Yardımcı fonksiyon: Girilen doğum tarihine göre burç uyumunu kontrol eden fonksiyon (halihazırda var)
+  // Doğum tarihine göre burç uyumunu kontrol eden fonksiyon
   bool isBirthDateMatchingZodiac(String birthDateStr, String zodiac) {
     final birthDate = DateFormat('dd-MM-yyyy').parse(birthDateStr);
     final int month = birthDate.month;
@@ -177,103 +190,115 @@ class _SignUpStep2State extends State<SignUpStep2> {
           onPressed: () => Get.back(),
         ),
       ),
-      body: SafeArea(
-        child: AuthForm(
-          title: "Burcunuzu ve Doğum Tarihinizi Seçiniz",
-          subtitle:
-              "Burç seçerek veya doğum tarihinizi girerek devam edebilirsiniz.",
-          children: [
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () => _selectDate(context),
-                    child: AbsorbPointer(
-                      child: AuthTextInput(
-                        labelText: "Doğum Tarihi",
-                        controller: birthDateController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Lütfen doğum tarihinizi giriniz";
-                          }
-                          return null;
-                        },
+      body: LoadingOverlay(
+        isLoading: isLoading,
+        child: SafeArea(
+          child: AuthForm(
+            title: "Burcunuzu ve Doğum Tarihinizi Seçiniz",
+            subtitle:
+                "Burç seçerek veya doğum tarihinizi girerek devam edebilirsiniz.",
+            children: [
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () => _selectDate(context),
+                      child: AbsorbPointer(
+                        child: AuthTextInput(
+                          labelText: "Doğum Tarihi",
+                          controller: birthDateController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Lütfen doğum tarihinizi giriniz";
+                            }
+                            return null;
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Zodiac Grid
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 3,
-                        ),
-                    itemCount: zodiacSigns.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedZodiac = zodiacSigns[index]["name"];
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color:
-                                selectedZodiac == zodiacSigns[index]["name"]
-                                    ? AppColors.accentColor
-                                    : AppColors.cardColor,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
+                    const SizedBox(height: 20),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 3,
+                          ),
+                      itemCount: zodiacSigns.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedZodiac = zodiacSigns[index]["name"];
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 5,
+                            ),
+                            decoration: BoxDecoration(
                               color:
                                   selectedZodiac == zodiacSigns[index]["name"]
-                                      ? AppColors.primaryColor
-                                      : Colors.grey.shade400,
-                              width: 2,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                zodiacSigns[index]["icon"],
-                                size: 24,
+                                      ? AppColors.accentColor
+                                      : AppColors.cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
                                 color:
                                     selectedZodiac == zodiacSigns[index]["name"]
-                                        ? Colors.white
-                                        : Colors.grey.shade600,
+                                        ? AppColors.primaryColor
+                                        : Colors.grey.shade400,
+                                width: 2,
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                zodiacSigns[index]["name"],
-                                style: TextStyle(
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  zodiacSigns[index]["icon"],
+                                  size: 24,
                                   color:
                                       selectedZodiac ==
                                               zodiacSigns[index]["name"]
                                           ? Colors.white
-                                          : AppColors.secondaryColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                                          : Colors.grey.shade600,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    zodiacSigns[index]["name"],
+                                    style: TextStyle(
+                                      color:
+                                          selectedZodiac ==
+                                                  zodiacSigns[index]["name"]
+                                              ? Colors.white
+                                              : AppColors.secondaryColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 30),
-            AuthButton(label: "Kayıt Ol", onPressed: registerUser),
-          ],
+              const SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                child: AuthButton(label: "Kayıt Ol", onPressed: registerUser),
+              ),
+            ],
+          ),
         ),
       ),
     );
