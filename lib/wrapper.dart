@@ -34,8 +34,6 @@ class _WrapperState extends State<Wrapper> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data!.emailVerified) {
-              // Her cold start'te AnimatedHomeScreen gösterilsin,
-              // AnimatedHomeScreen içindeki timer tamamlandığında MainScreen'e geçiş yapsın.
               return const AnimatedHomeScreen();
             } else {
               return const VerifyAccount();

@@ -1,12 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:horoscope/opening.dart';
 import 'package:horoscope/screens/animated_home_screen.dart';
-import 'package:horoscope/screens/home_screen.dart';
+import 'package:horoscope/services/auth_services.dart';
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VerifyAccount extends StatefulWidget {
   const VerifyAccount({super.key});
@@ -16,49 +14,23 @@ class VerifyAccount extends StatefulWidget {
 }
 
 class _VerifyAccountState extends State<VerifyAccount> {
-  // Mevcut kullanıcıya doğrulama emaili gönderir
   Future<void> verifyAccount() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null && !user.emailVerified) {
-      await user.sendEmailVerification();
+    try {
+      await AuthService.sendVerificationEmail();
       Get.snackbar(
         "Email Gönderildi",
         "Lütfen e-posta kutunuzu kontrol edin.",
         snackPosition: SnackPosition.BOTTOM,
       );
-    } else {
-      Get.snackbar(
-        "Hata",
-        "Kullanıcı bulunamadı veya email zaten doğrulanmış.",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+    } catch (e) {
+      Get.snackbar("Hata", "$e", snackPosition: SnackPosition.BOTTOM);
     }
   }
 
-  // Kullanıcının e-posta doğrulama durumunu kontrol eder ve tüm bilgileri kaydeder
   Future<void> checkVerification() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await user.reload();
-      if (user.emailVerified) {
-        final docRef = FirebaseFirestore.instance
-            .collection("users")
-            .doc(user.uid);
-        final docSnapshot = await docRef.get();
-
-        if (docSnapshot.exists) {
-          final userData = docSnapshot.data();
-
-          await docRef.set({
-            "verifiedAt": FieldValue.serverTimestamp(),
-            "birthDate": userData?["birthDate"] ?? "",
-            "gender":
-                userData?["gender"] ??
-                "", // `gender` bilgisi eksikse tamamlanıyor ✅
-            "zodiacSign": userData?["zodiacSign"] ?? "",
-          }, SetOptions(merge: true));
-        }
-
+    try {
+      bool verified = await AuthService.checkEmailVerification();
+      if (verified) {
         Get.offAll(() => AnimatedHomeScreen());
       } else {
         Get.snackbar(
@@ -67,13 +39,14 @@ class _VerifyAccountState extends State<VerifyAccount> {
           snackPosition: SnackPosition.BOTTOM,
         );
       }
+    } catch (e) {
+      Get.snackbar("Hata", "$e", snackPosition: SnackPosition.BOTTOM);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar: Geri tuşu Get.offAll ile çalışıyor
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.offAll(() => const Opening()),
@@ -102,8 +75,6 @@ class _VerifyAccountState extends State<VerifyAccount> {
                 style: TextStyle(fontSize: 18, color: AppColors.primaryColor),
               ),
               const SizedBox(height: 30),
-
-              // "Devam Et" butonu
               SizedBox(
                 width: double.infinity,
                 child: CustomButton(
@@ -120,8 +91,6 @@ class _VerifyAccountState extends State<VerifyAccount> {
                 style: TextStyle(fontSize: 16, color: Colors.white),
               ),
               const SizedBox(height: 15),
-
-              // "Tekrar Gönder" butonu
               SizedBox(
                 width: double.infinity,
                 child: CustomButton(

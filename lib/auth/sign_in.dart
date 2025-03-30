@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:horoscope/services/auth_services.dart';
+
 import '../widgets/auth_forms.dart';
 import '../widgets/auth_text_inputs.dart';
 import '../widgets/auth_buttons.dart';
@@ -21,13 +22,11 @@ class _SignInState extends State<SignIn> {
 
   Future<void> signInUser() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-            email: email.text.trim(),
-            password: password.text.trim(),
-          );
-
-      if (userCredential.user != null) {
+      final user = await AuthService.signIn(
+        email: email.text,
+        password: password.text,
+      );
+      if (user != null) {
         Get.offAll(() => const Wrapper());
       }
     } catch (e) {

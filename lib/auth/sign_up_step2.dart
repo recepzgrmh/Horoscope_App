@@ -1,11 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:horoscope/services/auth_services.dart';
 import '../models/user_model.dart';
 import '../widgets/auth_forms.dart';
-import '../widgets/auth_buttons.dart';
 import '../widgets/auth_text_inputs.dart';
+import '../widgets/auth_buttons.dart';
 import 'verify_account.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -39,7 +38,6 @@ class _SignUpStep2State extends State<SignUpStep2> {
     {"name": "Balık", "icon": MdiIcons.zodiacPisces},
   ];
 
-  /// 📌 Kullanıcı kayıt işlemi ve Firestore'a kaydetme
   Future<void> registerUser() async {
     if (birthDateController.text.isEmpty && selectedZodiac == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -51,37 +49,12 @@ class _SignUpStep2State extends State<SignUpStep2> {
     }
 
     try {
-      // 🔹 Firebase Authentication ile kullanıcı oluşturma
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-            email: widget.user.email,
-            password: widget.user.password,
-          );
-
-      User? user = userCredential.user;
-
-      if (user != null) {
-        // 🔹 Kullanıcı adını Firebase profiline kaydet
-        await user.updateDisplayName(
-          "${widget.user.fullName} ${widget.user.lastName}",
-        );
-        await user.reload();
-
-        // 🔹 Kullanıcıya doğrulama e-postası gönder
-        await user.sendEmailVerification();
-
-        // 🔹 Kullanıcı bilgilerini Firestore'a kaydet
-        await FirebaseFirestore.instance.collection("users").doc(user.uid).set({
-          "fullName": widget.user.fullName,
-          "lastName": widget.user.lastName,
-          "email": widget.user.email,
-          "birthDate": birthDateController.text.trim(),
-          "gender": widget.user.gender,
-          "zodiacSign": selectedZodiac,
-          "verifiedAt": null, // 🔹 Doğrulama tamamlandığında güncellenecek
-        });
-
-        // 🔹 Kullanıcıyı hesap doğrulama sayfasına yönlendir
+      final firebaseUser = await AuthService.signUp(
+        user: widget.user,
+        birthDate: birthDateController.text.trim(),
+        zodiacSign: selectedZodiac,
+      );
+      if (firebaseUser != null) {
         Get.offAll(() => const VerifyAccount());
       }
     } catch (e) {
@@ -91,7 +64,6 @@ class _SignUpStep2State extends State<SignUpStep2> {
     }
   }
 
-  /// 📌 Kullanıcının doğum tarihini seçmesini sağlayan fonksiyon
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -117,7 +89,6 @@ class _SignUpStep2State extends State<SignUpStep2> {
           subtitle:
               "Burç seçerek veya doğum tarihinizi girerek devam edebilirsiniz.",
           children: [
-            // 📌 Burç Seçimi Butonları (Eski UI Korundu!)
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -181,8 +152,6 @@ class _SignUpStep2State extends State<SignUpStep2> {
               },
             ),
             const SizedBox(height: 20),
-
-            // 📌 Doğum Tarihi Seçimi
             GestureDetector(
               onTap: () => _selectDate(context),
               child: AbsorbPointer(
@@ -193,8 +162,6 @@ class _SignUpStep2State extends State<SignUpStep2> {
               ),
             ),
             const SizedBox(height: 30),
-
-            // 📌 Kayıt Ol Butonu
             AuthButton(label: "Kayıt Ol", onPressed: registerUser),
           ],
         ),

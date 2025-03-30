@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
+import 'zodiac_detail_screen.dart'; // ✅ Burç detay sayfasını import et
 
 class ReadingsScreen extends StatelessWidget {
   const ReadingsScreen({super.key});
@@ -97,7 +98,22 @@ class ReadingsScreen extends StatelessWidget {
                 String imageName = zodiacSigns[index];
 
                 return GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ZodiacDetailScreen(
+                              zodiacName: imageName,
+                              imagePath:
+                                  "assets/images/zodiac-signs/$imageName.jpeg",
+                            ),
+                        fullscreenDialog:
+                            true, // ✅ Sayfayı tam ekran modal olarak aç
+                      ),
+                    );
+                  },
+
                   child: Stack(
                     children: [
                       ClipRRect(

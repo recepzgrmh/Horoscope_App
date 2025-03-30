@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:horoscope/services/auth_services.dart';
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:horoscope/widgets/text_inputs.dart';
@@ -16,7 +16,7 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   Future<void> resetPassword() async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.text);
+      await AuthService.resetPassword(email: email.text);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Reset link sent!")));
@@ -44,10 +44,9 @@ class _ResetPasswordState extends State<ResetPassword> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(22.0),
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start, // Textleri sola hizalar
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               SizedBox(
                 width: double.infinity,
                 child: Text(
@@ -56,7 +55,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                   textAlign: TextAlign.start,
                 ),
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               SizedBox(
                 width: double.infinity,
                 child: Text(
@@ -65,10 +64,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                   textAlign: TextAlign.start,
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               TextInputs(labelText: 'E-mail', controller: email, isEmail: true),
-
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               CustomButton(
                 label: "Şifre Sıfırlama Linki Gönder",
                 onPressed: resetPassword,
