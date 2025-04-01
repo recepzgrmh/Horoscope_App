@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
-import 'package:get/get.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({Key? key}) : super(key: key);

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/services/firebase_services.dart';
-import '../styles/app_colors.dart';
 import 'custom_button.dart';
 
 class ProfileTabView extends StatelessWidget {

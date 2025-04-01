@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
-import 'package:get/get.dart';
-import 'package:horoscope/screens/zodiac_detail_screen.dart';
 
 class SocialCard extends StatelessWidget {
   final String title;

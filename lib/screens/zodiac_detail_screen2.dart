@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
-// Eğer CarouselView özel bir widget değilse, ilgili paketi ekleyin veya kendi widget’ınızı tanımlayın.
-import 'package:horoscope/widgets/tarot_card.dart';
 
 String getDateFromZodiac(String zodiacName) {
   switch (zodiacName) {

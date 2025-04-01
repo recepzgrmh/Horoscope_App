@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:horoscope/styles/app_colors.dart';
-import 'package:intl/intl.dart';
 
 class TarotDetailScreen extends StatefulWidget {
   final String title;

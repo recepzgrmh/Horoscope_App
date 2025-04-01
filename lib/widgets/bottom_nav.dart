@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
-import 'package:material_design_icons_flutter/icon_map.dart';
 
 class BottomNavBar extends StatelessWidget {
   final AnimationController? animationController;
