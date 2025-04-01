@@ -9,7 +9,7 @@ class ZodiacCompatibility extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Her kategori için uyumlu burçları çekiyoruz ve virgülle ayırarak metin haline getiriyoruz.
+    // Her kategori için uyumlu burçları çekip virgülle ayırıyoruz
     final String loveCompatible = getCompatibleZodiacs(
       zodiacName,
       'love',
@@ -23,29 +23,67 @@ class ZodiacCompatibility extends StatelessWidget {
       'friendship',
     ).join(', ');
 
+    // Her kategori için uyumsuz burçları çekip virgülle ayırıyoruz
+    final String loveIncompatible = getIncompatibleZodiacs(
+      zodiacName,
+      'love',
+    ).join(', ');
+    final String workIncompatible = getIncompatibleZodiacs(
+      zodiacName,
+      'work',
+    ).join(', ');
+    final String friendshipIncompatible = getIncompatibleZodiacs(
+      zodiacName,
+      'friendship',
+    ).join(', ');
+
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${zodiacName.capitalized} Compatibility',
+            '${zodiacName.capitalized} Compatibility & Incompatibility',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 24,
               color: AppColors.textPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 10),
           Text(
-            '${zodiacName.capitalized} burcu için uyumlu burçlar ve ilişkisel dinamikler aşağıda listelenmiştir.',
-            style: TextStyle(color: AppColors.textSecondary),
+            '${zodiacName.capitalized} burcu için uyumlu ve uyumsuz burçlar aşağıda listelenmiştir.',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
           ),
           const SizedBox(height: 30),
+          Text(
+            'Compatible:',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 10),
           _compatibilityChart(
             loveCompatible,
             workCompatible,
             friendshipCompatible,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Incompatible:',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _compatibilityChart(
+            loveIncompatible,
+            workIncompatible,
+            friendshipIncompatible,
           ),
         ],
       ),

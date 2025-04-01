@@ -18,13 +18,16 @@ class ZodiacOverview extends StatelessWidget {
           Text(
             'About ${zodiacName.capitalized}',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 24,
               color: AppColors.textPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 10),
-          Text(overviewText, style: TextStyle(color: AppColors.textSecondary)),
+          Text(
+            overviewText,
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+          ),
         ],
       ),
     );
