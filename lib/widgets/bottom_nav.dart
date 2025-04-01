@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
+import 'package:material_design_icons_flutter/icon_map.dart';
 
 class BottomNavBar extends StatelessWidget {
   final AnimationController? animationController;
@@ -26,6 +27,7 @@ class BottomNavBar extends StatelessWidget {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.comment), label: 'Readings'),
+          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Feed'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       );
@@ -47,6 +49,7 @@ class BottomNavBar extends StatelessWidget {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.comment), label: 'Readings'),
+          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Feed'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

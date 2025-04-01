@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:horoscope/screens/zodiac_detail_screen.dart';
 import 'package:horoscope/styles/app_colors.dart';
-import 'zodiac_detail_screen.dart'; // ✅ Burç detay sayfasını import et
 
 class ReadingsScreen extends StatelessWidget {
   const ReadingsScreen({super.key});
@@ -20,13 +20,38 @@ class ReadingsScreen extends StatelessWidget {
     "virgo",
   ];
 
+  // Yeni Feed mock verileri
+  final List<Map<String, String>> feedPosts = const [
+    {
+      'username': '@astroQueen',
+      'content': 'Bugün enerjin yüksek, yeni başlangıçlar için harika bir gün.',
+      'time': '2m',
+    },
+    {
+      'username': '@stargazer',
+      'content': 'Gökyüzündeki yıldızlar bugünün sırlarını fısıldıyor.',
+      'time': '5m',
+    },
+    {
+      'username': '@moonwalker',
+      'content': 'Ayın etkisiyle duygularınız derinleşebilir, sakin kalın.',
+      'time': '10m',
+    },
+    {
+      'username': '@sunrise',
+      'content': 'Güneşin doğuşu umut ve yenilik getiriyor, ilerleyin.',
+      'time': '15m',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // 📌 **Discover Bölümü**
+          // Discover Bölümü
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 60, 20, 10),
@@ -47,7 +72,7 @@ class ReadingsScreen extends StatelessWidget {
             ),
           ),
 
-          // 📌 **Discover Görseli**
+          // Discover Görseli
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -63,7 +88,7 @@ class ReadingsScreen extends StatelessWidget {
             ),
           ),
 
-          // 📌 **Zodiac Bölümü Başlık**
+          // Zodiac Bölümü Başlığı
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
@@ -84,7 +109,7 @@ class ReadingsScreen extends StatelessWidget {
             ),
           ),
 
-          // 📌 **Zodiac Grid**
+          // Zodiac Grid
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             sliver: SliverGrid(
@@ -96,24 +121,20 @@ class ReadingsScreen extends StatelessWidget {
               ),
               delegate: SliverChildBuilderDelegate((context, index) {
                 String imageName = zodiacSigns[index];
-
                 return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => ZodiacDetailScreen(
-                              zodiacName: imageName,
-                              imagePath:
-                                  "assets/images/zodiac-signs/$imageName.jpeg",
-                            ),
-                        fullscreenDialog:
-                            true, // ✅ Sayfayı tam ekran modal olarak aç
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => ZodiacDetailScreen(
+                                zodiacName: imageName,
+                                imagePath:
+                                    "assets/images/zodiac-signs/$imageName.jpeg",
+                              ),
+                          fullscreenDialog: true,
+                        ),
                       ),
-                    );
-                  },
-
                   child: Stack(
                     children: [
                       ClipRRect(
@@ -153,11 +174,89 @@ class ReadingsScreen extends StatelessWidget {
               }, childCount: zodiacSigns.length),
             ),
           ),
+          // Feed Bölümü Başlığı
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: Text(
+                'Latest Feed',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ),
+          ),
 
+          // Feed Gönderi Listesi
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final post = feedPosts[index];
+                return FeedCard(
+                  username: post['username']!,
+                  content: post['content']!,
+                  time: post['time']!,
+                );
+              }, childCount: feedPosts.length),
+            ),
+          ),
           const SliverPadding(padding: EdgeInsets.only(bottom: 30)),
         ],
       ),
-      backgroundColor: AppColors.backgroundColor,
+    );
+  }
+}
+
+class FeedCard extends StatelessWidget {
+  final String username;
+  final String content;
+  final String time;
+
+  const FeedCard({
+    Key? key,
+    required this.username,
+    required this.content,
+    required this.time,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: AppColors.cardColor,
+      margin: const EdgeInsets.only(bottom: 16.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Post başlığı: kullanıcı bilgisi ve zaman
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: AppColors.accentColor,
+                  child: Text(username[1].toUpperCase()),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  username,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  time,
+                  style: TextStyle(color: Colors.white.withOpacity(0.6)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(content, style: const TextStyle(color: Colors.white)),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:horoscope/screens/feed_screen.dart';
 import 'package:horoscope/screens/home_screen.dart';
 import 'package:horoscope/screens/profile_screen.dart';
 import 'package:horoscope/screens/readings_screen.dart';
@@ -21,6 +22,7 @@ class _MainScreenState extends State<MainScreen>
   final List<Widget> _screens = const [
     HomeScreen(),
     ReadingsScreen(),
+    FeedScreen(),
     ProfileScreen(),
   ];
 

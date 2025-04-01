@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:horoscope/screens/zodiac_detail_screen2.dart';
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:get/get.dart';
@@ -42,7 +43,7 @@ class ZodiacDetailScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  "Burç açıklamaları burada olacak. Burcun tarihi, özellikleri ve yorumları ekleyebilirsin.",
+                  "${zodiacName.capitalize} burcu ile ilgili detaylı bilgi almak için ilerle",
                   style: const TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
@@ -51,8 +52,14 @@ class ZodiacDetailScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: CustomButton(
-                  label: 'Geri Dön',
-                  onPressed: () => Get.back(),
+                  label: 'Devam Et',
+                  onPressed:
+                      () => Get.to(
+                        ZodiacDetailScreen2(
+                          zodiacName: zodiacName,
+                          imagePath: imagePath,
+                        ),
+                      ),
                   backgroundColor: AppColors.accentColor,
                   foregroundColor: AppColors.primaryColor,
                 ),
