@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/styles/app_colors.dart';
+import 'package:horoscope/utils/zodiac_data.dart';
 
 class ZodiacOverview extends StatelessWidget {
   final String zodiacName;
@@ -8,13 +9,14 @@ class ZodiacOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String overviewText = getZodiacOverview(zodiacName);
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'General Information about $zodiacName',
+            'About ${zodiacName.capitalized}',
             style: TextStyle(
               fontSize: 20,
               color: AppColors.textPrimary,
@@ -22,10 +24,7 @@ class ZodiacOverview extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Text(
-            '$zodiacName burcu hakkında detaylı bilgiler burada yer alacak.',
-            style: TextStyle(color: AppColors.textSecondary),
-          ),
+          Text(overviewText, style: TextStyle(color: AppColors.textSecondary)),
         ],
       ),
     );

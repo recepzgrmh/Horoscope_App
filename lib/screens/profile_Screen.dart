@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/services/firebase_services.dart';
 
-import '../widgets/sliver_profile_app_bar.dart';
-import '../widgets/profile_tab_view.dart';
+import '../widgets/proflle/sliver_profile_app_bar.dart';
+import '../widgets/proflle/profile_tab_view.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

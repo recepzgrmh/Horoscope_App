@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:horoscope/widgets/custom_button.dart';
-import '../styles/app_colors.dart';
+import '../../styles/app_colors.dart';
 
 class ProfileFlexibleSpace extends StatelessWidget {
   final Map<String, dynamic> userData;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/services/firebase_services.dart';
-import 'custom_button.dart';
+import '../custom_button.dart';
 
 class ProfileTabView extends StatelessWidget {
   final TabController tabController;
