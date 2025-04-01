@@ -3,7 +3,7 @@ import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/carousel_widget.dart';
 import 'package:horoscope/widgets/social_widget.dart';
 import 'package:horoscope/widgets/tarot_card.dart';
-import '../screens/zodiac_detail_screen.dart';
+import '../screens/zodiac/zodiac_detail_screen.dart';
 
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});

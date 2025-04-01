@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:horoscope/screens/zodiac_detail_screen.dart';
+import 'package:horoscope/screens/zodiac/zodiac_detail_screen.dart';
 import 'package:horoscope/styles/app_colors.dart';
 
 class ReadingsScreen extends StatelessWidget {

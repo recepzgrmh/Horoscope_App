@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:horoscope/screens/zodiac_detail_screen2.dart';
+import 'package:horoscope/screens/zodiac/zodiac_detail_screen2.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:get/get.dart';
 
