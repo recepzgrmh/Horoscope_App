@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:horoscope/styles/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
-
-  // Stil parametreleri (Orijinal ElevatedButton.styleFrom(...) değerleri)
-  final Color backgroundColor;
-  final Color foregroundColor;
+  final bool isPrimary;
   final double verticalPadding;
   final double minHeight;
   final double elevation;
@@ -17,8 +15,7 @@ class CustomButton extends StatelessWidget {
     super.key,
     required this.label,
     required this.onPressed,
-    required this.backgroundColor,
-    required this.foregroundColor,
+    this.isPrimary = true,
     this.verticalPadding = 16.0,
     this.minHeight = 48.0,
     this.elevation = 3.0,
@@ -31,14 +28,20 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
-        foregroundColor: foregroundColor,
+        backgroundColor:
+            isPrimary ? AppColors.accentColor : AppColors.deactiveButton,
+        foregroundColor: isPrimary ? Colors.white : AppColors.primaryColor,
         padding: EdgeInsets.symmetric(vertical: verticalPadding),
         minimumSize: Size.fromHeight(minHeight),
         elevation: elevation,
         shape: RoundedRectangleBorder(borderRadius: borderRadius),
       ),
-      child: Text(label, style: textStyle),
+      child: Text(
+        label,
+        style:
+            textStyle ??
+            const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
     );
   }
 }

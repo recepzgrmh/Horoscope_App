@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/user_service.dart';
+import 'package:horoscope/services/firebase_services.dart';
+
 import '../widgets/sliver_profile_app_bar.dart';
 import '../widgets/profile_tab_view.dart';
 
@@ -23,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> fetchUser() async {
-    userData = await UserService.getUserData();
+    userData = await FirebaseServices.getUserData();
     setState(() {});
   }
 

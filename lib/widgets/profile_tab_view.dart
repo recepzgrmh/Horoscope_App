@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/user_service.dart';
+import 'package:horoscope/services/firebase_services.dart';
 import '../styles/app_colors.dart';
 import 'custom_button.dart';
 
@@ -19,10 +19,7 @@ class ProfileTabView extends StatelessWidget {
             padding: const EdgeInsets.only(top: 100),
             child: CustomButton(
               label: 'Çıkış Yap',
-              onPressed: () => UserService.signOut(context),
-
-              backgroundColor: AppColors.accentColor,
-              foregroundColor: AppColors.primaryColor,
+              onPressed: () => FirebaseServices.signOut(context),
             ),
           ),
         ),

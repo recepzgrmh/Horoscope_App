@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:horoscope/services/auth_services.dart';
+import 'package:horoscope/services/firebase_services.dart';
+
 import 'package:horoscope/styles/app_colors.dart';
-import 'package:horoscope/widgets/auth_forms.dart';
-import 'package:horoscope/widgets/auth_text_inputs.dart';
-import 'package:horoscope/widgets/auth_buttons.dart';
+import 'package:horoscope/widgets/auth/auth_forms.dart';
+import 'package:horoscope/widgets/auth/auth_text_inputs.dart';
+import 'package:horoscope/widgets/custom_button.dart';
+
 import 'package:horoscope/widgets/loading_overlay.dart';
 import 'package:horoscope/wrapper.dart';
 import 'reset_password.dart';
@@ -29,7 +31,7 @@ class _SignInState extends State<SignIn> {
       isLoading = true;
     });
     try {
-      final user = await AuthService.signIn(
+      final user = await FirebaseServices.signIn(
         email: email.text,
         password: password.text,
       );
@@ -64,7 +66,6 @@ class _SignInState extends State<SignIn> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
-        elevation: 1,
       ),
       body: LoadingOverlay(
         isLoading: isLoading,
@@ -110,15 +111,15 @@ class _SignInState extends State<SignIn> {
                 ),
               ),
               const SizedBox(height: 30),
-              AuthButton(label: "Giriş Yap", onPressed: signInUser),
+              CustomButton(label: "Giriş Yap", onPressed: signInUser),
               const SizedBox(height: 20),
-              AuthButton(
+              CustomButton(
                 label: "Şifremi Unuttum",
                 onPressed: () => Get.to(const ResetPassword()),
                 isPrimary: false,
               ),
               const SizedBox(height: 10),
-              AuthButton(
+              CustomButton(
                 label: "Şimdi Hesap Oluştur",
                 onPressed: () => Get.to(const SignUpStep1()),
                 isPrimary: false,

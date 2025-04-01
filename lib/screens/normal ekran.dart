@@ -177,8 +177,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                           child: CustomButton(
                             label: 'Çıkış Yap',
                             onPressed: signOut,
-                            backgroundColor: AppColors.accentColor,
-                            foregroundColor: Colors.white,
                           ),
                         ),
                       ],

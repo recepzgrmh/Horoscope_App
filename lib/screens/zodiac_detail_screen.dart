@@ -60,8 +60,6 @@ class ZodiacDetailScreen extends StatelessWidget {
                           imagePath: imagePath,
                         ),
                       ),
-                  backgroundColor: AppColors.accentColor,
-                  foregroundColor: AppColors.primaryColor,
                 ),
               ),
               const SizedBox(height: 30),

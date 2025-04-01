@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:horoscope/opening.dart';
 import 'package:horoscope/screens/animated_home_screen.dart';
-import 'package:horoscope/services/auth_services.dart';
+import 'package:horoscope/services/firebase_services.dart';
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:get/get.dart';
@@ -16,7 +16,7 @@ class VerifyAccount extends StatefulWidget {
 class _VerifyAccountState extends State<VerifyAccount> {
   Future<void> verifyAccount() async {
     try {
-      await AuthService.sendVerificationEmail();
+      await FirebaseServices.sendVerificationEmail();
       Get.snackbar(
         "Email Gönderildi",
         "Lütfen e-posta kutunuzu kontrol edin.",
@@ -29,7 +29,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
 
   Future<void> checkVerification() async {
     try {
-      bool verified = await AuthService.checkEmailVerification();
+      bool verified = await FirebaseServices.checkEmailVerification();
       if (verified) {
         Get.offAll(() => AnimatedHomeScreen());
       } else {
@@ -80,8 +80,6 @@ class _VerifyAccountState extends State<VerifyAccount> {
                 child: CustomButton(
                   label: "Devam Et",
                   onPressed: checkVerification,
-                  backgroundColor: AppColors.accentColor,
-                  foregroundColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 30),
@@ -94,10 +92,9 @@ class _VerifyAccountState extends State<VerifyAccount> {
               SizedBox(
                 width: double.infinity,
                 child: CustomButton(
+                  isPrimary: false,
                   label: "Tekrar Gönder",
                   onPressed: verifyAccount,
-                  backgroundColor: AppColors.deactiveButton,
-                  foregroundColor: AppColors.primaryColor,
                 ),
               ),
               const SizedBox(height: 10),

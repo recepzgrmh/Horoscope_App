@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:horoscope/models/user_model.dart';
-import 'package:horoscope/services/auth_services.dart';
+import 'package:horoscope/services/firebase_services.dart';
 import 'package:horoscope/styles/app_colors.dart';
-import 'package:horoscope/widgets/auth_forms.dart';
-import 'package:horoscope/widgets/auth_text_inputs.dart';
-import 'package:horoscope/widgets/auth_buttons.dart';
+import 'package:horoscope/widgets/auth/auth_forms.dart';
+import 'package:horoscope/widgets/auth/auth_text_inputs.dart';
+import 'package:horoscope/widgets/custom_button.dart';
 import 'package:horoscope/widgets/loading_overlay.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -100,7 +100,7 @@ class _SignUpStep2State extends State<SignUpStep2> {
     }
 
     try {
-      final firebaseUser = await AuthService.signUp(
+      final firebaseUser = await FirebaseServices.signUp(
         user: widget.user,
         birthDate: birthDateController.text.trim(),
         zodiacSign: selectedZodiac,
@@ -295,7 +295,7 @@ class _SignUpStep2State extends State<SignUpStep2> {
               const SizedBox(height: 30),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: AuthButton(label: "Kayıt Ol", onPressed: registerUser),
+                child: CustomButton(label: "Kayıt Ol", onPressed: registerUser),
               ),
             ],
           ),

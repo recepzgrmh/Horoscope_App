@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:horoscope/auth/sign_in.dart';
-import 'package:horoscope/services/auth_services.dart';
+import 'package:horoscope/services/firebase_services.dart';
+
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/custom_button.dart';
 import 'package:horoscope/widgets/loading_overlay.dart';
@@ -23,7 +24,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       isLoading = true;
     });
     try {
-      await AuthService.resetPassword(email: email.text);
+      await FirebaseServices.resetPassword(email: email.text);
       Get.snackbar(
         "Link Gönderildi",
         "Reset link sent!",
@@ -64,7 +65,6 @@ class _ResetPasswordState extends State<ResetPassword> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
-        elevation: 1,
       ),
       body: LoadingOverlay(
         isLoading: isLoading,
@@ -102,8 +102,6 @@ class _ResetPasswordState extends State<ResetPassword> {
                 CustomButton(
                   label: "Şifre Sıfırlama Linki Gönder",
                   onPressed: resetPassword,
-                  backgroundColor: AppColors.accentColor,
-                  foregroundColor: Colors.white,
                 ),
               ],
             ),

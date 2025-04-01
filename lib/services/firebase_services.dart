@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
+import '../utils/date_utils.dart' as my_utils;
+import 'package:flutter/material.dart';
+import 'package:horoscope/opening.dart';
 
-class AuthService {
+class FirebaseServices {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Giriş yapma işlemini gerçekleştiren metot.
+  /// **Kullanıcı giriş işlemi**
   static Future<User?> signIn({
     required String email,
     required String password,
@@ -18,30 +21,18 @@ class AuthService {
       );
       return userCredential.user;
     } catch (e) {
-      return Future.error(e);
+      return Future.error("Giriş başarısız: $e");
     }
   }
 
-  /// Şifre sıfırlama işlemini gerçekleştiren metot.
-  static Future<void> resetPassword({required String email}) async {
-    try {
-      await _auth.sendPasswordResetEmail(email: email.trim());
-    } catch (e) {
-      return Future.error(e);
-    }
-  }
-
-  /// Kullanıcı kayıt işlemini gerçekleştiren metot.
-  /// [user]: Kullanıcının temel bilgileri.
-  /// [birthDate]: Doğum tarihi.
-  /// [zodiacSign]: Seçilen burç.
+  /// **Kullanıcı kaydı (signup)**
   static Future<User?> signUp({
     required UserModel user,
     required String birthDate,
     required String? zodiacSign,
   }) async {
-    if (birthDate.isEmpty && (zodiacSign == null || zodiacSign.isEmpty)) {
-      return Future.error("Lütfen doğum tarihinizi veya burcunuzu seçin.");
+    if (birthDate.isEmpty || (zodiacSign == null || zodiacSign.isEmpty)) {
+      return Future.error("Lütfen doğum tarihinizi ve burcunuzu girin.");
     }
     try {
       UserCredential userCredential = await _auth
@@ -49,19 +40,15 @@ class AuthService {
             email: user.email,
             password: user.password,
           );
+
       User? firebaseUser = userCredential.user;
 
       if (firebaseUser != null) {
-        // Firebase kullanıcı profilini güncelle
         await firebaseUser.updateDisplayName(
           "${user.fullName} ${user.lastName}",
         );
-        await firebaseUser.reload();
-
-        // Doğrulama e-postası gönder
         await firebaseUser.sendEmailVerification();
 
-        // Kullanıcı bilgilerini Firestore'a kaydet
         await _firestore.collection("users").doc(firebaseUser.uid).set({
           "fullName": user.fullName,
           "lastName": user.lastName,
@@ -77,38 +64,56 @@ class AuthService {
         return Future.error("Kayıt başarısız, kullanıcı bulunamadı.");
       }
     } catch (e) {
-      return Future.error(e);
+      return Future.error("Kayıt sırasında hata oluştu: $e");
     }
   }
 
-  /// Çıkış yapma işlemini gerçekleştiren metot.
-  static Future<void> signOut() async {
+  /// **Şifre sıfırlama**
+  static Future<void> resetPassword({required String email}) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email.trim());
+    } catch (e) {
+      return Future.error("Şifre sıfırlama başarısız: $e");
+    }
+  }
+
+  /// **Çıkış yapma**
+  static Future<void> signOut(BuildContext context) async {
     try {
       await _auth.signOut();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const Opening()),
+          (route) => false,
+        );
+      });
     } catch (e) {
-      return Future.error(e);
+      debugPrint("Çıkış sırasında hata oluştu: $e");
     }
   }
 
-  /// Doğrulama e-postası gönderme.
+  /// **E-posta doğrulama**
   static Future<void> sendVerificationEmail() async {
     User? user = _auth.currentUser;
     if (user != null && !user.emailVerified) {
       await user.sendEmailVerification();
     } else {
-      return Future.error("Kullanıcı bulunamadı veya email zaten doğrulanmış.");
+      return Future.error(
+        "Kullanıcı bulunamadı veya e-posta zaten doğrulandı.",
+      );
     }
   }
 
-  /// E-posta doğrulama kontrolü yapar.
-  /// Doğrulama başarılı ise kullanıcı verilerini günceller.
+  /// **E-posta doğrulama durumunu kontrol etme**
   static Future<bool> checkEmailVerification() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      await user.reload();
+      await user.reload(); // Kullanıcı verilerini yenile
       if (user.emailVerified) {
+        // Firestore'daki kullanıcı verisini güncelle
         final docRef = _firestore.collection("users").doc(user.uid);
         final docSnapshot = await docRef.get();
+
         if (docSnapshot.exists) {
           final userData = docSnapshot.data();
           await docRef.set({
@@ -122,5 +127,25 @@ class AuthService {
       }
     }
     return false;
+  }
+
+  /// **Kullanıcı bilgilerini Firestore'dan çekme**
+  static Future<Map<String, dynamic>?> getUserData() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      final data = doc.data();
+
+      if (data != null && data["birthDate"] != null) {
+        final age = my_utils.DateUtils.calculateAge(data["birthDate"]);
+        data["age"] = age.toString();
+
+        await _firestore.collection('users').doc(user.uid).update({
+          'age': age.toString(),
+        });
+      }
+      return data;
+    }
+    return null;
   }
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'text_inputs.dart';
+import 'package:horoscope/widgets/text_inputs.dart';
 
 class AuthTextInput extends StatelessWidget {
   final String labelText;
   final TextEditingController controller;
   final bool isPassword;
   final bool isEmail;
-  final String? Function(String?)? validator; // Yeni validatör parametresi
+  final String? Function(String?)? validator;
 
   const AuthTextInput({
     super.key,

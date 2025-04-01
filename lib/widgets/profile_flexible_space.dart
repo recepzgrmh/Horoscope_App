@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:horoscope/widgets/custom_button.dart';
 import '../styles/app_colors.dart';
-import 'edit_profile_button.dart';
 
 class ProfileFlexibleSpace extends StatelessWidget {
   final Map<String, dynamic> userData;
@@ -146,7 +146,14 @@ class ProfileFlexibleSpace extends StatelessWidget {
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 500),
                 opacity: t > 0.5 ? 1 : 0,
-                child: EditProfileButton(onPressed: () {}),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: CustomButton(
+                    isPrimary: false,
+                    label: 'Profili Düzenle',
+                    onPressed: () {},
+                  ),
+                ),
               ),
             ),
           ],

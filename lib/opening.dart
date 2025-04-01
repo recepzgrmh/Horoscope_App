@@ -56,17 +56,14 @@ class Opening extends StatelessWidget {
                   child: CustomButton(
                     label: 'Sign Up',
                     onPressed: () => Get.to(SignUpStep1()),
-                    backgroundColor: AppColors.accentColor,
-                    foregroundColor: AppColors.primaryColor,
                   ),
                 ),
                 SizedBox(width: 10), // Butonlar arasında boşluk
                 Expanded(
                   child: CustomButton(
+                    isPrimary: false,
                     label: 'Log in',
                     onPressed: () => Get.to(SignIn()),
-                    backgroundColor: AppColors.deactiveButton,
-                    foregroundColor: AppColors.primaryColor,
                   ),
                 ),
               ],

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:horoscope/models/user_model.dart';
-import 'package:horoscope/widgets/auth_forms.dart';
-import 'package:horoscope/widgets/auth_text_inputs.dart';
-import 'package:horoscope/widgets/auth_buttons.dart';
+import 'package:horoscope/widgets/auth/auth_forms.dart';
+import 'package:horoscope/widgets/auth/auth_text_inputs.dart';
+import 'package:horoscope/widgets/custom_button.dart';
 import 'package:horoscope/widgets/loading_overlay.dart';
 import 'sign_up_step2.dart';
 
@@ -154,7 +154,7 @@ class _SignUpStep1State extends State<SignUpStep1> {
                 ),
               ),
               const SizedBox(height: 30),
-              AuthButton(label: "İleri", onPressed: nextStep),
+              CustomButton(label: "İleri", onPressed: nextStep),
             ],
           ),
         ),
