@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:horoscope/screens/main_screen.dart';
 import 'package:horoscope/styles/app_colors.dart';
 
 class FeedScreen extends StatelessWidget {
@@ -66,7 +67,21 @@ class FeedScreen extends StatelessWidget {
             title: const Text("Feed", style: TextStyle(color: Colors.white)),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                debugPrint("Back button pressed. Checking navigator stack...");
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                  debugPrint("Navigator.pop() çağrıldı.");
+                } else {
+                  debugPrint(
+                    "Geri dönecek rota yok. MainScreen'e yönlendiriliyor.",
+                  );
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => MainScreen()),
+                  );
+                }
+              },
             ),
             centerTitle: true,
           ),
@@ -140,11 +155,10 @@ class _PostCard extends StatelessWidget {
   final String time;
 
   const _PostCard({
-    Key? key,
     required this.username,
     required this.content,
     required this.time,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

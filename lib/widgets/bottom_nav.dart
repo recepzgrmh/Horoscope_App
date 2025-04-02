@@ -15,7 +15,6 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Eğer animationController null ise, doğrudan sabit BottomNavigationBar döndür.
     if (animationController == null) {
       return BottomNavigationBar(
         currentIndex: currentIndex,

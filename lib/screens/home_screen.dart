@@ -15,11 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: HomeContent(), // 📌 Yeni ortak bileşeni çağırıyoruz
-          ),
-        ],
+        slivers: [SliverToBoxAdapter(child: HomeContent())],
       ),
       backgroundColor: AppColors.backgroundColor,
     );

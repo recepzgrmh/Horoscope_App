@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 // Burç tarihleri
 const Map<String, String> zodiacDates = {
   'Aries': "Mart 21 - Nisan 19",

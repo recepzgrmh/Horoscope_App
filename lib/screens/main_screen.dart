@@ -35,7 +35,7 @@ class _MainScreenState extends State<MainScreen>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    // MainScreen'de nav bar her zaman görünür
+    // Nav bar her zaman görünür
     _animationController.value = 1.0;
   }
 
@@ -53,18 +53,31 @@ class _MainScreenState extends State<MainScreen>
     super.dispose();
   }
 
+  // Geri tuşuna basıldığında; eğer HomeScreen dışında isek ana sayfaya geç,
+  // aksi halde uygulamayı kapatmasına izin ver.
+  Future<bool> _onWillPop() async {
+    if (_currentIndex != 0) {
+      _onBottomNavTapped(0);
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: _screens,
-      ),
-      bottomNavigationBar: BottomNavBar(
-        animationController: _animationController,
-        currentIndex: _currentIndex,
-        onTap: _onBottomNavTapped,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: _screens,
+        ),
+        bottomNavigationBar: BottomNavBar(
+          animationController: _animationController,
+          currentIndex: _currentIndex,
+          onTap: _onBottomNavTapped,
+        ),
       ),
     );
   }
