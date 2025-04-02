@@ -6,12 +6,16 @@ class TarotCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String imagePath;
+  final String zodiac; // New parameter for user's zodiac
+  final String userId; // New parameter for user's ID
 
   const TarotCard({
     super.key,
     required this.title,
     required this.subtitle,
     required this.imagePath,
+    required this.zodiac,
+    required this.userId,
   });
 
   @override
@@ -26,6 +30,8 @@ class TarotCard extends StatelessWidget {
                   title: title,
                   subtitle: subtitle,
                   imagePath: imagePath,
+                  userId: userId,
+                  zodiac: zodiac,
                 ),
           ),
         );

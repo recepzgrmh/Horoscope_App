@@ -1,14 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:horoscope/services/user_sevice.dart';
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/widgets/carousel_widget.dart';
 import 'package:horoscope/widgets/social_widget.dart';
 import 'package:horoscope/widgets/tarot_card.dart';
 import '../screens/zodiac/zodiac_detail_screen.dart';
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
 
-  // 📌 Otomatik Zodiac Resim Listesi
+  // Automatic Zodiac image list
   static const List<String> zodiacSigns = [
     "aquarius",
     "aries",
@@ -25,9 +28,44 @@ class HomeContent extends StatelessWidget {
   ];
 
   @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  bool isLoading = false;
+  String? userZodiac;
+  String? userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Loads user data from Firestore using UserService.
+  Future<void> _loadUserData() async {
+    setState(() => isLoading = true);
+    final data = await UserService.getUserData();
+    if (data != null) {
+      // Assuming the Firestore document contains a field named "zodiacSign"
+      userZodiac = data['zodiacSign'] as String?;
+      userId = FirebaseAuth.instance.currentUser?.uid;
+    }
+    setState(() => isLoading = false);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (userZodiac == null || userId == null) {
+      return const Center(child: Text('Kullanıcı bilgisi alınamadı.'));
+    }
+
     return SingleChildScrollView(
-      // SingleChildScrollView ekleyerek ekranların taşmasını engelledik
+      // Prevent content overflow
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -42,54 +80,40 @@ class HomeContent extends StatelessWidget {
     );
   }
 
-  // Carousel bölümünü ayrı metotla oluşturduk
+  // Build the carousel section with TarotCard widgets that receive the user's zodiac and userId.
   Widget _buildCarouselSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Carousel Başlık
-        Padding(
-          padding: const EdgeInsets.only(top: 100, left: 16, right: 16),
-          child: Text(
-            'Carousel View',
-            style: const TextStyle(
-              fontSize: 20,
-              color: AppColors.primaryColor,
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: CarouselWidget(
+        itemExtent: 330,
+        children: [
+          TarotCard(
+            title: "Daily Horoscope",
+            subtitle: "What does the day have in store for you?",
+            imagePath: "assets/images/daily.png",
+            zodiac: userZodiac!,
+            userId: userId!,
           ),
-        ),
-        // Carousel İçeriği
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: CarouselWidget(
-            itemExtent: 330,
-            children: const [
-              TarotCard(
-                title: "Daily Horoscope",
-                subtitle: "What does the day have in store for you?",
-                imagePath: "assets/images/daily.png",
-              ),
-              TarotCard(
-                title: "Weekly Horoscope",
-                subtitle:
-                    "The universe has a message for your next seven days.",
-                imagePath: "assets/images/weekly.png",
-              ),
-              TarotCard(
-                title: "Monthly Horoscope",
-                subtitle: "Use your energy wisely throughout the month.",
-                imagePath: "assets/images/monthly.png",
-              ),
-            ],
+          TarotCard(
+            title: "Weekly Horoscope",
+            subtitle: "The universe has a message for your next 7 days.",
+            imagePath: "assets/images/weekly.png",
+            zodiac: userZodiac!,
+            userId: userId!,
           ),
-        ),
-      ],
+          TarotCard(
+            title: "Monthly Horoscope",
+            subtitle: "Use your energy wisely throughout the month.",
+            imagePath: "assets/images/monthly.png",
+            zodiac: userZodiac!,
+            userId: userId!,
+          ),
+        ],
+      ),
     );
   }
 
-  // Community bölümünü ayrı metotla oluşturduk
+  // Build the community section containing a zodiac grid.
   Widget _buildCommunitySection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -97,10 +121,10 @@ class HomeContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 30),
-          // Başlık
-          Text(
+          // Section Title
+          const Text(
             'Community',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               color: AppColors.primaryColor,
               fontWeight: FontWeight.w700,
@@ -108,9 +132,9 @@ class HomeContent extends StatelessWidget {
             textAlign: TextAlign.start,
           ),
           const SizedBox(height: 10),
-          Text(
+          const Text(
             'Connect with Others Who Share Your Sign',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w400,
@@ -128,14 +152,14 @@ class HomeContent extends StatelessWidget {
   Widget _buildZodiacGrid(BuildContext context) {
     return Column(
       children:
-          zodiacSigns
+          HomeContent.zodiacSigns
               .map((imageName) => ZodiacCard(imageName: imageName))
               .toList(),
     );
   }
 }
 
-// Burç kartı için ayrı widget
+// ZodiacCard widget displays each zodiac image with an overlay text and navigates to ZodiacDetailScreen.
 class ZodiacCard extends StatelessWidget {
   final String imageName;
 
@@ -173,7 +197,7 @@ class ZodiacCard extends StatelessWidget {
           },
           child: Stack(
             children: [
-              // Resim
+              // Display the zodiac image
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
@@ -183,7 +207,7 @@ class ZodiacCard extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              // Üstüne Metin
+              // Overlay text on the image
               Positioned(
                 left: 20,
                 bottom: 20,

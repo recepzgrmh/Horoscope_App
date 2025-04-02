@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:horoscope/styles/app_colors.dart';
+import 'package:horoscope/services/gemini_service.dart'; // GeminiService kodunuz burada olsun
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TarotDetailScreen extends StatefulWidget {
   final String title;
   final String subtitle;
   final String imagePath;
+  final String userId;
+  final String zodiac;
 
   const TarotDetailScreen({
     super.key,
     required this.title,
     required this.subtitle,
     required this.imagePath,
+    required this.userId,
+    required this.zodiac,
   });
 
   @override
@@ -19,16 +26,34 @@ class TarotDetailScreen extends StatefulWidget {
 }
 
 class _TarotDetailScreenState extends State<TarotDetailScreen> {
-  String dailyMessage =
-      "Sevgili Gizem, bugün iletişim becerilerin ve yaratıcılığın oldukça güçlü. "
-      "Yeni insanlarla tanışmak, fikir alışverişinde bulunmak ve sosyal ilişkilerini geliştirmek için harika bir gün. "
-      "İlgi alanlarına yönelik farklı aktiviteler keşfedebilir, kısa geziler ya da spontane buluşmalarla kendini yenileyebilirsin. "
-      "Duygusal anlamda ise içsel olarak güçlü ve kararlı hissedeceğin bir gündesin. "
-      "Bugün isteklerin konusunda daha net adımlar atabilir, ilişkilerde belirsiz durumlara son verebilirsin. "
-      "Kendine inanarak ilerlemen, çevrendeki insanların da seninle olan bağlarını güçlendirecek.";
+  bool _isLoading = false;
+  Map<String, dynamic>? dailyData;
 
-  final gemini = Gemini.instance;
-  final bool _isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadDailyTarot();
+  }
+
+  Future<void> _loadDailyTarot() async {
+    setState(() => _isLoading = true);
+    try {
+      dailyData = await GeminiService.getDailyTarotData(userId: widget.userId);
+      if (dailyData == null) {
+        await GeminiService.fetchAndSaveDailyTarot(
+          userId: widget.userId,
+          zodiac: widget.zodiac,
+        );
+        dailyData = await GeminiService.getDailyTarotData(
+          userId: widget.userId,
+        );
+      }
+    } catch (e) {
+      debugPrint("Hata: $e");
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +70,8 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
+              : dailyData == null
+              ? const Center(child: Text("Günlük tarot verisi bulunamadı."))
               : SingleChildScrollView(
                 child: SafeArea(
                   child: Padding(
@@ -55,7 +82,7 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Üst görsel: imagePath ile dinamik resim kullanılıyor ve sol alt köşede "Overview" yazısı ekleniyor.
+                        // Üst görsel: imagePath ile dinamik resim kullanılıyor, sol alt köşeye "Overview" yazısı ekleniyor.
                         SizedBox(
                           height: 200,
                           width: double.infinity,
@@ -93,74 +120,74 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
+                        // Daily Message Bölümü
+                        Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: DailyMessageSection(
+                            message: dailyData?['dailyMessage'] ?? '',
+                          ),
+                        ),
                         // Mood Bölümü
-                        SizedBox(
-                          width: double.infinity,
-                          child: Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                        Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: MoodSection(
+                            moodList: List<String>.from(
+                              dailyData?['moodOfTheDay'] ?? [],
                             ),
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            child: const MoodSection(),
                           ),
                         ),
                         // Overall Rating Bölümü
-                        SizedBox(
-                          width: double.infinity,
-                          child: Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            child: const OverallRatingSection(),
+                        Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: OverallRatingSection(
+                            overallRating: dailyData?['overallRating'] ?? 0.0,
+                            ratingData: _parseRatingData(dailyData!),
                           ),
                         ),
-                        // Yorum Bölümleri
-                        SizedBox(
-                          width: double.infinity,
-                          child: Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            child: const CommentSection(
-                              titleText: 'Love',
-                              subtitleText:
-                                  "Harmony in love's realm today, sparking deeper connections. Communication fosters understanding. Embrace vulnerability for growth with your partner.",
-                            ),
+                        // Yorum Bölümleri (Love, Career, Social)
+                        Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: CommentSection(
+                            titleText: 'Love',
+                            subtitleText: dailyData?['love'] ?? '',
                           ),
                         ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            child: const CommentSection(
-                              titleText: 'Career',
-                              subtitleText:
-                                  "In career, adaptability is key. Embrace change and unexpected opportunities. Teamwork drives success.",
-                            ),
+                        Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: CommentSection(
+                            titleText: 'Career',
+                            subtitleText: dailyData?['career'] ?? '',
                           ),
                         ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            child: const CommentSection(
-                              titleText: 'Social',
-                              subtitleText:
-                                  "Your social circle flourishes. New friendships could bloom or strengthen existing ties. Share your joy and listen actively.",
-                            ),
+                        Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: CommentSection(
+                            titleText: 'Social',
+                            subtitleText: dailyData?['social'] ?? '',
                           ),
                         ),
                       ],
@@ -170,7 +197,61 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
               ),
     );
   }
+
+  List<_RatingData> _parseRatingData(Map<String, dynamic> data) {
+    if (data.containsKey('ratingDetails')) {
+      final List<dynamic> list = data['ratingDetails'];
+      return list
+          .map(
+            (item) => _RatingData(
+              stars: item['stars'] as int,
+              percent: item['percent'] as int,
+            ),
+          )
+          .toList();
+    }
+    return [
+      _RatingData(stars: 5, percent: 20),
+      _RatingData(stars: 4, percent: 20),
+      _RatingData(stars: 3, percent: 30),
+      _RatingData(stars: 2, percent: 20),
+      _RatingData(stars: 1, percent: 10),
+    ];
+  }
 }
+
+// Yeni widget: DailyMessageSection
+class DailyMessageSection extends StatelessWidget {
+  final String message;
+  const DailyMessageSection({super.key, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Daily Message',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            style: const TextStyle(fontSize: 16, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Aşağıdaki diğer widgetlar: CommentSection, MoodSection, OverallRatingSection, _RatingData vb. değişmedi
 
 class CommentSection extends StatelessWidget {
   final String titleText;
@@ -229,7 +310,8 @@ class CommentSection extends StatelessWidget {
 }
 
 class MoodSection extends StatelessWidget {
-  const MoodSection({super.key});
+  final List<String> moodList;
+  const MoodSection({super.key, required this.moodList});
 
   @override
   Widget build(BuildContext context) {
@@ -250,12 +332,7 @@ class MoodSection extends StatelessWidget {
           Wrap(
             spacing: 16,
             runSpacing: 12,
-            children: const [
-              _MoodWidget('Optimistic'),
-              _MoodWidget('Creative'),
-              _MoodWidget('Romantic'),
-              _MoodWidget('Energetic'),
-            ],
+            children: moodList.map((mood) => _MoodWidget(mood)).toList(),
           ),
         ],
       ),
@@ -287,19 +364,16 @@ class _MoodWidget extends StatelessWidget {
 }
 
 class OverallRatingSection extends StatelessWidget {
-  const OverallRatingSection({super.key});
+  final double overallRating;
+  final List<_RatingData> ratingData;
+  const OverallRatingSection({
+    super.key,
+    required this.overallRating,
+    required this.ratingData,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final double overallRating = 3.5;
-    final List<_RatingData> ratingData = [
-      _RatingData(stars: 5, percent: 20),
-      _RatingData(stars: 4, percent: 20),
-      _RatingData(stars: 3, percent: 30),
-      _RatingData(stars: 2, percent: 20),
-      _RatingData(stars: 1, percent: 10),
-    ];
-
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
