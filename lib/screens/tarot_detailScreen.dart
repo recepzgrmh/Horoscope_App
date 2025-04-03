@@ -320,6 +320,19 @@ class MoodSection extends StatelessWidget {
   final List<String> moodList;
   const MoodSection({super.key, required this.moodList, required this.label});
 
+  String get moodPeriod {
+    switch (label.toLowerCase()) {
+      case 'daily':
+        return 'Day';
+      case 'weekly':
+        return 'Week';
+      case 'monthly':
+        return 'Month';
+      default:
+        return label; // Fallback to the given label
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -328,7 +341,7 @@ class MoodSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Mood of the ${label.substring(0, label.length - 2).capitalized}',
+            'Mood of the $moodPeriod',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
