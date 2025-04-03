@@ -6,8 +6,9 @@ class TarotCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String imagePath;
-  final String zodiac; // New parameter for user's zodiac
-  final String userId; // New parameter for user's ID
+  final String zodiac; // User's zodiac sign
+  final String userId; // User's ID
+  final String horoscopeType; // 'daily', 'weekly', or 'monthly'
 
   const TarotCard({
     super.key,
@@ -16,6 +17,7 @@ class TarotCard extends StatelessWidget {
     required this.imagePath,
     required this.zodiac,
     required this.userId,
+    required this.horoscopeType,
   });
 
   @override
@@ -32,6 +34,7 @@ class TarotCard extends StatelessWidget {
                   imagePath: imagePath,
                   userId: userId,
                   zodiac: zodiac,
+                  horoscopeType: horoscopeType,
                 ),
           ),
         );

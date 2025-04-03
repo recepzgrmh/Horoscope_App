@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
-import 'package:horoscope/styles/app_colors.dart';
-import 'package:horoscope/services/gemini_service.dart'; // GeminiService kodunuz burada olsun
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:horoscope/services/gemini_service.dart';
+import 'package:horoscope/styles/app_colors.dart';
+import 'package:horoscope/utils/zodiac_data.dart';
 
 class TarotDetailScreen extends StatefulWidget {
   final String title;
@@ -11,6 +12,7 @@ class TarotDetailScreen extends StatefulWidget {
   final String imagePath;
   final String userId;
   final String zodiac;
+  final String horoscopeType; // "daily", "weekly", or "monthly"
 
   const TarotDetailScreen({
     super.key,
@@ -19,6 +21,7 @@ class TarotDetailScreen extends StatefulWidget {
     required this.imagePath,
     required this.userId,
     required this.zodiac,
+    required this.horoscopeType,
   });
 
   @override
@@ -32,20 +35,25 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _loadDailyTarot();
+    _loadTarot();
   }
 
-  Future<void> _loadDailyTarot() async {
+  Future<void> _loadTarot() async {
     setState(() => _isLoading = true);
     try {
-      dailyData = await GeminiService.getDailyTarotData(userId: widget.userId);
+      dailyData = await GeminiService.getTarotData(
+        userId: widget.userId,
+        horoscopeType: widget.horoscopeType,
+      );
       if (dailyData == null) {
-        await GeminiService.fetchAndSaveDailyTarot(
+        await GeminiService.fetchAndSaveTarot(
           userId: widget.userId,
           zodiac: widget.zodiac,
+          horoscopeType: widget.horoscopeType,
         );
-        dailyData = await GeminiService.getDailyTarotData(
+        dailyData = await GeminiService.getTarotData(
           userId: widget.userId,
+          horoscopeType: widget.horoscopeType,
         );
       }
     } catch (e) {
@@ -71,7 +79,7 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : dailyData == null
-              ? const Center(child: Text("Günlük tarot verisi bulunamadı."))
+              ? const Center(child: Text("Horoscope verisi bulunamadı."))
               : SingleChildScrollView(
                 child: SafeArea(
                   child: Padding(
@@ -82,7 +90,7 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Üst görsel: imagePath ile dinamik resim kullanılıyor, sol alt köşeye "Overview" yazısı ekleniyor.
+                        // Top image with "Overview" overlay
                         SizedBox(
                           height: 200,
                           width: double.infinity,
@@ -120,18 +128,19 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Daily Message Bölümü
+                        // Daily Message Section
                         Card(
                           elevation: 3,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                           margin: const EdgeInsets.symmetric(vertical: 8),
-                          child: DailyMessageSection(
+                          child: MessageSection(
+                            label: widget.horoscopeType,
                             message: dailyData?['dailyMessage'] ?? '',
                           ),
                         ),
-                        // Mood Bölümü
+                        // Mood Section
                         Card(
                           elevation: 3,
                           shape: RoundedRectangleBorder(
@@ -139,12 +148,13 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
                           ),
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           child: MoodSection(
+                            label: widget.horoscopeType,
                             moodList: List<String>.from(
                               dailyData?['moodOfTheDay'] ?? [],
                             ),
                           ),
                         ),
-                        // Overall Rating Bölümü
+                        // Overall Rating Section
                         Card(
                           elevation: 3,
                           shape: RoundedRectangleBorder(
@@ -156,7 +166,7 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
                             ratingData: _parseRatingData(dailyData!),
                           ),
                         ),
-                        // Yorum Bölümleri (Love, Career, Social)
+                        // Comment Sections for Love, Career, Social
                         Card(
                           elevation: 3,
                           shape: RoundedRectangleBorder(
@@ -220,10 +230,11 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
   }
 }
 
-// Yeni widget: DailyMessageSection
-class DailyMessageSection extends StatelessWidget {
+// New widget: MessageSection
+class MessageSection extends StatelessWidget {
   final String message;
-  const DailyMessageSection({super.key, required this.message});
+  final String label;
+  const MessageSection({super.key, required this.message, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +244,7 @@ class DailyMessageSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Daily Message',
+            '${label.capitalized} Message',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -241,17 +252,12 @@ class DailyMessageSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            message,
-            style: const TextStyle(fontSize: 16, color: Colors.white),
-          ),
+          Text(message, style: const TextStyle(fontSize: 16)),
         ],
       ),
     );
   }
 }
-
-// Aşağıdaki diğer widgetlar: CommentSection, MoodSection, OverallRatingSection, _RatingData vb. değişmedi
 
 class CommentSection extends StatelessWidget {
   final String titleText;
@@ -310,8 +316,9 @@ class CommentSection extends StatelessWidget {
 }
 
 class MoodSection extends StatelessWidget {
+  final String label;
   final List<String> moodList;
-  const MoodSection({super.key, required this.moodList});
+  const MoodSection({super.key, required this.moodList, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +328,7 @@ class MoodSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Mood of the Day',
+            'Mood of the ${label.substring(0, label.length - 2).capitalized}',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -391,7 +398,6 @@ class OverallRatingSection extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Genel puan ve yıldızlar
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -416,7 +422,6 @@ class OverallRatingSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(width: 16),
-              // Her yıldız puanının barı
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -93,6 +93,7 @@ class _HomeContentState extends State<HomeContent> {
             imagePath: "assets/images/daily.png",
             zodiac: userZodiac!,
             userId: userId!,
+            horoscopeType: 'daily',
           ),
           TarotCard(
             title: "Weekly Horoscope",
@@ -100,6 +101,7 @@ class _HomeContentState extends State<HomeContent> {
             imagePath: "assets/images/weekly.png",
             zodiac: userZodiac!,
             userId: userId!,
+            horoscopeType: 'weekly',
           ),
           TarotCard(
             title: "Monthly Horoscope",
@@ -107,6 +109,7 @@ class _HomeContentState extends State<HomeContent> {
             imagePath: "assets/images/monthly.png",
             zodiac: userZodiac!,
             userId: userId!,
+            horoscopeType: 'monthly',
           ),
         ],
       ),
