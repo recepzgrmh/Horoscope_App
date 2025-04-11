@@ -128,7 +128,7 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Daily Message Section
+                        // Message Section (artık "generalMessage" okunuyor)
                         Card(
                           elevation: 3,
                           shape: RoundedRectangleBorder(
@@ -137,7 +137,7 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           child: MessageSection(
                             label: widget.horoscopeType,
-                            message: dailyData?['dailyMessage'] ?? '',
+                            message: dailyData?['generalMessage'] ?? '',
                           ),
                         ),
                         // Mood Section
@@ -163,7 +163,10 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           child: OverallRatingSection(
                             overallRating: dailyData?['overallRating'] ?? 0.0,
-                            ratingData: _parseRatingData(dailyData!),
+                            ratingData: _parseRatingData(
+                              dailyData!,
+                              widget.horoscopeType,
+                            ),
                           ),
                         ),
                         // Comment Sections for Love, Career, Social
@@ -208,29 +211,49 @@ class _TarotDetailScreenState extends State<TarotDetailScreen> {
     );
   }
 
-  List<_RatingData> _parseRatingData(Map<String, dynamic> data) {
-    if (data.containsKey('ratingDetails')) {
-      final List<dynamic> list = data['ratingDetails'];
-      return list
-          .map(
-            (item) => _RatingData(
-              stars: item['stars'] as int,
-              percent: item['percent'] as int,
-            ),
-          )
-          .toList();
+  // horoscopeType parametresi eklenerek overallRating değerine göre dinamik
+  // rating dağılımı hesaplanıyor. Örneğin haftalık veya aylık yorumlar için,
+  // overallRating küçükse ufak bir artış yapılabilir.
+  List<_RatingData> _parseRatingData(
+    Map<String, dynamic> data,
+    String horoscopeType,
+  ) {
+    double overall = data['overallRating'] ?? 0.0;
+
+    // Periyotlar arasında tutarlı bir rating görünümü elde etmek için
+    // örnek ayarlamalar yapabilirsiniz. (Buradaki değerler örnektir.)
+    if (horoscopeType.toLowerCase() == 'weekly') {
+      // Haftalık rating için eğer overallRating 4'ten düşükse 0.5 ekle.
+      if (overall < 4) overall += 0.5;
+    } else if (horoscopeType.toLowerCase() == 'monthly') {
+      // Aylık rating için eğer overallRating 3'ten düşükse 1 ekle.
+      if (overall < 3) overall += 1;
     }
-    return [
-      _RatingData(stars: 5, percent: 20),
-      _RatingData(stars: 4, percent: 20),
-      _RatingData(stars: 3, percent: 30),
-      _RatingData(stars: 2, percent: 20),
-      _RatingData(stars: 1, percent: 10),
-    ];
+    overall = overall.clamp(0.0, 5.0); // 0-5 aralığına sınırla.
+
+    final int lowerStar = overall.floor();
+    final int upperStar = (overall.ceil() > 5 ? 5 : overall.ceil());
+    final double fraction = overall - lowerStar;
+    int lowerPercent = ((1 - fraction) * 100).round();
+    int upperPercent = (fraction * 100).round();
+
+    List<_RatingData> dynamicRatings = [];
+    for (int star = 1; star <= 5; star++) {
+      if (star == lowerStar && lowerStar != upperStar) {
+        dynamicRatings.add(_RatingData(stars: star, percent: lowerPercent));
+      } else if (star == upperStar && lowerStar != upperStar) {
+        dynamicRatings.add(_RatingData(stars: star, percent: upperPercent));
+      } else if (lowerStar == upperStar && star == lowerStar) {
+        dynamicRatings.add(_RatingData(stars: star, percent: 100));
+      } else {
+        dynamicRatings.add(_RatingData(stars: star, percent: 0));
+      }
+    }
+    return dynamicRatings;
   }
 }
 
-// New widget: MessageSection
+// Yeni widget: MessageSection
 class MessageSection extends StatelessWidget {
   final String message;
   final String label;
@@ -238,6 +261,7 @@ class MessageSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // İstediğiniz şekilde "General Message" veya periyot adını kullanabilirsiniz.
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(

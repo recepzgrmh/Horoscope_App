@@ -2,36 +2,55 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
+/// Horoscope türüne bağlı olarak uygun tarih periyodunu oluşturur.
+/// - daily: "YYYY-MM-DD"
+/// - weekly: Haftanın başı (örneğin Pazartesi tarihini)
+/// - monthly: "YYYY-MM"
+String getPeriodString(String horoscopeType) {
+  final DateTime now = DateTime.now();
+  switch (horoscopeType.toLowerCase()) {
+    case 'daily':
+      return now.toIso8601String().substring(0, 10);
+    case 'weekly':
+      // Haftalık: Haftanın başlangıcı (Pazartesi)
+      final int daysFromMonday = now.weekday - 1; // Monday = 1
+      final DateTime monday = now.subtract(Duration(days: daysFromMonday));
+      return monday.toIso8601String().substring(0, 10);
+    case 'monthly':
+      return '${now.year}-${now.month.toString().padLeft(2, '0')}';
+    default:
+      return now.toIso8601String().substring(0, 10);
+  }
+}
+
 class GeminiService {
   static final Gemini _gemini = Gemini.instance;
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Fetches data from the Gemini API and saves it into Firestore under a document whose ID is:
-  /// "$userId-$horoscopeType-$currentDate".
-  /// After saving the new document, old entries (with the same user and horoscope type, but a different date)
-  /// are deleted.
+  /// Gemini API'den veri çekip, Firestore'a kaydeder.
+  /// Doküman ID'si: "$userId-$horoscopeType-$period"
+  /// Yeni veri eklenirken, aynı kullanıcı ve horoscopeType için
+  /// farklı dönemlere ait dokümanlar silinir.
   static Future<void> fetchAndSaveTarot({
     required String userId,
     required String zodiac,
     required String horoscopeType, // "daily", "weekly", or "monthly"
   }) async {
-    final String currentDate = DateTime.now().toIso8601String().substring(
-      0,
-      10,
-    );
-    final String docId = '$userId-$horoscopeType-$currentDate';
+    final String period = getPeriodString(horoscopeType);
+    final String docId = '$userId-$horoscopeType-$period';
 
-    // Check if today's document for this horoscope type already exists.
+    // İlgili dönem için belge zaten varsa, yeniden API çağrısı yapmadan çık.
     final docSnapshot =
         await _firestore.collection('tarotHoroscope').doc(docId).get();
     if (docSnapshot.exists) return;
 
+    // Gemini'ye gönderilen prompt artık horoscopeType'e göre genel yorum yapması için "generalMessage" kullanıyor.
     final String prompt = '''
-Bugün tarih: $currentDate.
+Bugün tarih: $period.
 Kullanıcının burcu: $zodiac.
 Horoscope Type: $horoscopeType.
 Lütfen aşağıdaki alanlarda detaylı yorum oluştur:
-- dailyMessage: Genel yorum.
+- generalMessage: ${horoscopeType[0].toUpperCase()}${horoscopeType.substring(1)} yorum.
 - moodOfTheDay: Kullanıcının sahip olabileceği 2-3 mood.
 - overallRating: Bu gün için 1 ile 5 arasında bir puan.
 - love: Aşk alanı yorumu.
@@ -44,10 +63,10 @@ Lütfen cevapları JSON formatında ver.
       final response = await _gemini.text(prompt);
       String rawOutput = response?.output?.trim() ?? '';
 
-      // Log raw output for debugging
+      // Hata ayıklama amacıyla ham çıktıyı loglama
       print("Gemini API raw output: $rawOutput");
 
-      // Clean the raw output if it starts/ends with markdown formatting.
+      // Çıktı markdown formatında ise temizle
       if (rawOutput.startsWith("```json")) {
         rawOutput = rawOutput.replaceFirst("```json", "").trim();
       }
@@ -61,13 +80,13 @@ Lütfen cevapları JSON formatında ver.
 
       final Map<String, dynamic> result = jsonDecode(rawOutput);
 
-      // Save new data into Firestore
+      // Yeni veriyi Firestore'a kaydet (alan adı generalMessage olarak güncellendi)
       await _firestore.collection('tarotHoroscope').doc(docId).set({
         'userId': userId,
-        'date': currentDate,
+        'period': period,
         'horoscopeType': horoscopeType,
         'zodiac': zodiac,
-        'dailyMessage': result['dailyMessage'] ?? '',
+        'generalMessage': result['generalMessage'] ?? '',
         'moodOfTheDay': result['moodOfTheDay'] ?? [],
         'overallRating':
             (result['overallRating'] is num)
@@ -79,7 +98,7 @@ Lütfen cevapları JSON formatında ver.
         'timestamp': FieldValue.serverTimestamp(),
       });
 
-      // Delete any old documents for this user and horoscopeType that are not for today.
+      // Aynı kullanıcı ve horoscopeType için eski (farklı dönem) dokümanları sil
       final QuerySnapshot snapshot =
           await _firestore
               .collection('tarotHoroscope')
@@ -88,7 +107,8 @@ Lütfen cevapları JSON formatında ver.
               .get();
 
       for (var doc in snapshot.docs) {
-        if ((doc.data() as Map<String, dynamic>)['date'] != currentDate) {
+        final docData = doc.data() as Map<String, dynamic>;
+        if (docData['period'] != period) {
           await doc.reference.delete();
         }
       }
@@ -97,16 +117,13 @@ Lütfen cevapları JSON formatında ver.
     }
   }
 
-  /// Retrieves the horoscope document for today for a given user.
+  /// Verilen kullanıcı ve horoscopeType için geçerli dönem dokümanını getirir.
   static Future<Map<String, dynamic>?> getTarotData({
     required String userId,
     required String horoscopeType,
   }) async {
-    final String currentDate = DateTime.now().toIso8601String().substring(
-      0,
-      10,
-    );
-    final String docId = '$userId-$horoscopeType-$currentDate';
+    final String period = getPeriodString(horoscopeType);
+    final String docId = '$userId-$horoscopeType-$period';
     final docSnapshot =
         await _firestore.collection('tarotHoroscope').doc(docId).get();
     return docSnapshot.exists ? docSnapshot.data() : null;
