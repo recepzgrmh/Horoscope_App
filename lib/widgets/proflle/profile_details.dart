@@ -12,7 +12,6 @@ class ProfileDetails extends StatelessWidget {
       children: [
         Image.asset('assets/images/zodiac-signs/virgo.jpeg', fit: BoxFit.cover),
         // Buraya profil resmini, isim, email gibi bilgileri ekle
-        // Daha önce kullandığın widget'ları buraya taşı
       ],
     );
   }

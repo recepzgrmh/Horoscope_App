@@ -41,7 +41,12 @@ class GeminiService {
 
     // İlgili dönem için belge zaten varsa, yeniden API çağrısı yapmadan çık.
     final docSnapshot =
-        await _firestore.collection('tarotHoroscope').doc(docId).get();
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('tarotHoroscope')
+            .doc(docId)
+            .get();
     if (docSnapshot.exists) return;
 
     // Gemini'ye gönderilen prompt artık horoscopeType'e göre genel yorum yapması için "generalMessage" kullanıyor.
@@ -81,26 +86,33 @@ Lütfen cevapları JSON formatında ver.
       final Map<String, dynamic> result = jsonDecode(rawOutput);
 
       // Yeni veriyi Firestore'a kaydet (alan adı generalMessage olarak güncellendi)
-      await _firestore.collection('tarotHoroscope').doc(docId).set({
-        'userId': userId,
-        'period': period,
-        'horoscopeType': horoscopeType,
-        'zodiac': zodiac,
-        'generalMessage': result['generalMessage'] ?? '',
-        'moodOfTheDay': result['moodOfTheDay'] ?? [],
-        'overallRating':
-            (result['overallRating'] is num)
-                ? (result['overallRating'] as num).toDouble()
-                : 0.0,
-        'love': result['love'] ?? '',
-        'career': result['career'] ?? '',
-        'social': result['social'] ?? '',
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('tarotHoroscope')
+          .doc(docId)
+          .set({
+            'userId': userId,
+            'period': period,
+            'horoscopeType': horoscopeType,
+            'zodiac': zodiac,
+            'generalMessage': result['generalMessage'] ?? '',
+            'moodOfTheDay': result['moodOfTheDay'] ?? [],
+            'overallRating':
+                (result['overallRating'] is num)
+                    ? (result['overallRating'] as num).toDouble()
+                    : 0.0,
+            'love': result['love'] ?? '',
+            'career': result['career'] ?? '',
+            'social': result['social'] ?? '',
+            'timestamp': FieldValue.serverTimestamp(),
+          });
 
       // Aynı kullanıcı ve horoscopeType için eski (farklı dönem) dokümanları sil
       final QuerySnapshot snapshot =
           await _firestore
+              .collection('users')
+              .doc(userId)
               .collection('tarotHoroscope')
               .where('userId', isEqualTo: userId)
               .where('horoscopeType', isEqualTo: horoscopeType)
@@ -125,7 +137,12 @@ Lütfen cevapları JSON formatında ver.
     final String period = getPeriodString(horoscopeType);
     final String docId = '$userId-$horoscopeType-$period';
     final docSnapshot =
-        await _firestore.collection('tarotHoroscope').doc(docId).get();
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('tarotHoroscope')
+            .doc(docId)
+            .get();
     return docSnapshot.exists ? docSnapshot.data() : null;
   }
 }

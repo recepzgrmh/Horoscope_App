@@ -8,6 +8,8 @@ import 'package:horoscope/opening.dart';
 class FirebaseServices {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static const String kDefaultPhotoUrl =
+      'https://firebasestorage.googleapis.com/v0/b/horoscope-new-9489b.firebasestorage.app/o/profile.jpg?alt=media&token=9c973717-79cf-487e-af91-de586af574b1';
 
   /// Kullanıcı giriş işlemi
   static Future<User?> signIn({
@@ -56,6 +58,7 @@ class FirebaseServices {
           "gender": user.gender,
           "zodiacSign": zodiacSign,
           "verifiedAt": null,
+          "photoUrl": kDefaultPhotoUrl,
         });
         return firebaseUser;
       } else {
