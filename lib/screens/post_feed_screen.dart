@@ -45,6 +45,16 @@ class _PostFeedScreenState extends State<PostFeedScreen> {
         'sentAt': Timestamp.now(),
       });
 
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('posts')
+          .add({
+            'userEmail': user.email,
+            'message': text,
+            'sentAt': Timestamp.now(),
+          });
+
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
