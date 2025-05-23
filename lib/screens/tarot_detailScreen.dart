@@ -1,7 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:horoscope/services/gemini_service.dart';
 import 'package:horoscope/styles/app_colors.dart';
 import 'package:horoscope/utils/zodiac_data.dart';
