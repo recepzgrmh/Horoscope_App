@@ -23,10 +23,26 @@ class BottomNavBar extends StatelessWidget {
         selectedItemColor: AppColors.primaryColor,
         unselectedItemColor: AppColors.textSecondary,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.comment), label: 'Readings'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Feed'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.newspaper_rounded),
+            label: 'Feed',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_stories_rounded),
+            label: 'Readings',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble_rounded),
+            label: 'ChatScreen',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_rounded),
+            label: 'Profile',
+          ),
         ],
       );
     }
@@ -45,10 +61,23 @@ class BottomNavBar extends StatelessWidget {
         selectedItemColor: AppColors.primaryColor,
         unselectedItemColor: AppColors.textSecondary,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.comment), label: 'Readings'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: 'Home',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Feed'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_stories_rounded),
+            label: 'Readings',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble_rounded),
+            label: 'ChatScreen',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_rounded),
+            label: 'Profile',
+          ),
         ],
       ),
     );

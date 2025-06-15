@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class PostFeedScreen extends StatefulWidget {
-  const PostFeedScreen({Key? key}) : super(key: key);
+  const PostFeedScreen({super.key});
 
   @override
   State<PostFeedScreen> createState() => _PostFeedScreenState();

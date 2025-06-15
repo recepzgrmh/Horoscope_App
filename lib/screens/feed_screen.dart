@@ -59,6 +59,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     return SharePost(
                       postMessage: data['message'] as String? ?? '',
                       user: data['userEmail'] as String? ?? 'Anonim',
+                      timestamp: (data['sentAt'] as Timestamp).toDate(),
                     );
                   },
                 );

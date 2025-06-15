@@ -13,9 +13,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [SliverToBoxAdapter(child: HomeContent())],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [SliverToBoxAdapter(child: HomeContent())],
+          ),
+        ),
       ),
       backgroundColor: AppColors.backgroundColor,
     );

@@ -14,9 +14,10 @@ class AnimatedHomeScreen extends StatefulWidget {
 }
 
 class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   late AnimationController _animationController;
+  late AnimationController _scrollIndicatorController;
   bool _showBottomNav = false;
   int _currentIndex = 0;
 
@@ -27,6 +28,10 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
+    _scrollIndicatorController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
     _scrollController.addListener(_handleScroll);
   }
 
@@ -61,6 +66,7 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
   void dispose() {
     _scrollController.dispose();
     _animationController.dispose();
+    _scrollIndicatorController.dispose();
     super.dispose();
   }
 
@@ -68,26 +74,61 @@ class _AnimatedHomeScreenState extends State<AnimatedHomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: MediaQuery.of(context).size.height,
-            floating: false,
-            pinned: true,
-            backgroundColor: AppColors.backgroundColor,
-            flexibleSpace: LayoutBuilder(
-              builder: (context, constraints) {
-                double percent =
-                    (constraints.maxHeight - kToolbarHeight) /
-                    (MediaQuery.of(context).size.height - kToolbarHeight);
-                double opacity = percent.clamp(0.0, 1.0);
-                return CustomAppBar(opacity: opacity);
-              },
-            ),
+      body: Stack(
+        children: [
+          CustomScrollView(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                expandedHeight: MediaQuery.of(context).size.height,
+                floating: false,
+                pinned: true,
+                backgroundColor: AppColors.backgroundColor,
+                flexibleSpace: LayoutBuilder(
+                  builder: (context, constraints) {
+                    double percent =
+                        (constraints.maxHeight - kToolbarHeight) /
+                        (MediaQuery.of(context).size.height - kToolbarHeight);
+                    double opacity = percent.clamp(0.0, 1.0);
+                    return CustomAppBar(opacity: opacity);
+                  },
+                ),
+              ),
+              SliverToBoxAdapter(child: HomeContent()),
+            ],
           ),
-          SliverToBoxAdapter(child: HomeContent()),
+          if (!_showBottomNav)
+            Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: AnimatedBuilder(
+                animation: _scrollIndicatorController,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(0, _scrollIndicatorController.value * 10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 50,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
         ],
       ),
       bottomNavigationBar: AnimatedSwitcher(
